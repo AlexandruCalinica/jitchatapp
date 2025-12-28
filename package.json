@@ -1,0 +1,50 @@
+{
+  "name": "jitchatapp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "author": {
+    "name": "AlexandruCalinica"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.7.1",
+    "@lexical/link": "^0.33.0",
+    "@lexical/react": "^0.33.0",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
+    "@tailwindcss/vite": "^4.1.8",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "phoenix": "^1.7.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss": "^4.1.8",
+    "tauri-plugin-mic-recorder-api": "^2.0.0",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.27"
+  },
+  "devDependencies": {
+    "@iconify-json/icon-park-outline": "^1.2.2",
+    "@iconify-json/solar": "^1.2.2",
+    "@tauri-apps/cli": "^2",
+    "@types/phoenix": "^1.6.6",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.6.2",
+    "unplugin-icons": "^22.1.0",
+    "vite": "^6.0.3"
+  }
+}
