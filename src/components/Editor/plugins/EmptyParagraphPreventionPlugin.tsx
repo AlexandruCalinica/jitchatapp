@@ -18,6 +18,7 @@ import {
   ExtendedParagraphNode,
 } from "../nodes/ExtendedParagraphNode";
 import { User } from "../shared/types";
+import { configState } from "../shared/state";
 
 type EmptyParagraphPreventionPluginProps = {
   enabled?: boolean; // Whether to enable the prevention (default: true)
@@ -113,7 +114,7 @@ export function EmptyParagraphPreventionPlugin({
         // Now handle the creation and selection in update mode
         editor.update(() => {
           const root = $getRoot();
-          const newParagraph = $createExtendedParagraphNode(currentUser);
+          const newParagraph = $createExtendedParagraphNode(currentUser, configState.defaultDraft);
 
           // Insert the new paragraph at the end
           root.append(newParagraph);
@@ -154,7 +155,7 @@ export function EmptyParagraphPreventionPlugin({
         // Now handle the creation and selection in update mode
         editor.update(() => {
           const root = $getRoot();
-          const newParagraph = $createExtendedParagraphNode(currentUser);
+          const newParagraph = $createExtendedParagraphNode(currentUser, configState.defaultDraft);
 
           // Insert the new paragraph at the end
           root.append(newParagraph);

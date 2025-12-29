@@ -17,6 +17,7 @@ import {
   ExtendedLineBreakNode,
 } from "./ExtendedLineBreakNode";
 import { User } from "../shared/types";
+import { configState } from "../shared/state";
 
 export const createNodes = (user?: User) => [
   LinkNode,
@@ -35,7 +36,7 @@ export const createNodes = (user?: User) => [
   QuoteNode,
   {
     replace: ParagraphNode,
-    with: () => $createExtendedParagraphNode(user),
+    with: () => $createExtendedParagraphNode(user, configState.defaultDraft),
     withKlass: ExtendedParagraphNode,
   },
   {

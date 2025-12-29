@@ -9,8 +9,8 @@ type ConfigState = {
 };
 
 export const configState: ConfigState = {
-  defaultDraft: false,
-  collapseDraftParagraphs: true, // Controls whether draft paragraphs should be collapsed (height: 0)
+  defaultDraft: true,
+  collapseDraftParagraphs: false,
   currentUser: null,
 };
 

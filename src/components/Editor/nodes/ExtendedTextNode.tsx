@@ -1,7 +1,7 @@
 import { TextNode, $create, $setState, $getState } from "lexical";
 
 import { User } from "../shared/types";
-import { userState, draftState } from "../plugins/nodeStates";
+import { userState, draftState, timestampState } from "../plugins/nodeStates";
 
 export class ExtendedTextNode extends TextNode {
   $config() {
@@ -14,12 +14,16 @@ export class ExtendedTextNode extends TextNode {
     const dom = super.createDOM(config);
     const user = $getState(this, userState);
     const isDraft = $getState(this, draftState);
+    const timestamp = $getState(this, timestampState);
 
     if (user) {
       dom.setAttribute("data-user", user.username);
     }
     if (isDraft) {
       dom.setAttribute("data-draft", "true");
+    }
+    if (timestamp !== undefined) {
+      dom.setAttribute("data-timestamp", timestamp.toString());
     }
     return dom;
   }
@@ -28,6 +32,7 @@ export class ExtendedTextNode extends TextNode {
     const update = super.updateDOM(prevNode, dom, config);
     const user = $getState(this, userState);
     const isDraft = $getState(this, draftState);
+    const timestamp = $getState(this, timestampState);
 
     if (user) {
       dom.setAttribute("data-user", user.username);
@@ -41,6 +46,12 @@ export class ExtendedTextNode extends TextNode {
       dom.removeAttribute("data-draft");
     }
 
+    if (timestamp !== undefined) {
+      dom.setAttribute("data-timestamp", timestamp.toString());
+    } else {
+      dom.removeAttribute("data-timestamp");
+    }
+
     return update;
   }
 }
@@ -48,7 +59,8 @@ export class ExtendedTextNode extends TextNode {
 export function $createExtendedTextNode(
   text: string,
   user?: User,
-  isDraft?: boolean
+  isDraft?: boolean,
+  timestamp?: number
 ): ExtendedTextNode {
   let node = $create(ExtendedTextNode);
   node.setTextContent(text);
@@ -59,6 +71,10 @@ export function $createExtendedTextNode(
 
   if (isDraft !== undefined) {
     node = $setState(node, draftState, isDraft);
+  }
+
+  if (timestamp !== undefined) {
+    node = $setState(node, timestampState, timestamp);
   }
 
   return node;

@@ -3,14 +3,12 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $getSelection,
   $isRangeSelection,
+  $getState,
+  $setState,
   COMMAND_PRIORITY_HIGH,
   createCommand,
 } from "lexical";
-import {
-  $isExtendedTextNode,
-  $createExtendedTextNode,
-} from "../nodes/ExtendedTextNode";
-import { $getState } from "lexical";
+import { $isExtendedTextNode } from "../nodes/ExtendedTextNode";
 import { userState, draftState } from "./nodeStates";
 
 // Create a command for toggling draft mode
@@ -44,14 +42,7 @@ export function DraftTogglePlugin({
             const isDraft = $getState(node, draftState);
 
             if (user?.username === currentUser) {
-              // Toggle draft mode for the current user's text nodes
-              const newTextNode = $createExtendedTextNode(
-                node.__text,
-                user,
-                !isDraft // Toggle the draft state
-              );
-
-              node.replace(newTextNode);
+              $setState(node, draftState, !isDraft);
               hasChanges = true;
             }
           }

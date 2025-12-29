@@ -56,6 +56,7 @@ import { TextBlurPlugin } from "./plugins/TextBlurPlugin";
 import { DraftTogglePlugin } from "./plugins/DraftTogglePlugin";
 import { ParagraphDraftPlugin } from "./plugins/ParagraphDraftPlugin";
 import { EmptyParagraphPreventionPlugin } from "./plugins/EmptyParagraphPreventionPlugin";
+import { CommitPlugin } from "./plugins/CommitPlugin";
 import { syncCursorPositions } from "./plugins/Collaboration/SyncCursors";
 import { User } from "./shared/types";
 import { useConfigState } from "./shared/state";
@@ -394,8 +395,6 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           <TextBlurPlugin
             currentUser={user?.username}
             unlockKey={textBlur?.unlockKey || "Alt"}
-            blurAmount={textBlur?.blurAmount || "2px"}
-            showIndicator={textBlur?.showIndicator !== false}
           />
           <DraftTogglePlugin
             draftMode={draftMode}
@@ -410,6 +409,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
             currentUser={user}
             enabled={preventEmptyParagraphs}
           />
+          <CommitPlugin currentUser={user} />
 
           {floatingAnchorElem && !usePlainText && (
             <>
