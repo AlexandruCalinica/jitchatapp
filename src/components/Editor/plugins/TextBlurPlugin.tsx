@@ -44,11 +44,11 @@ export function TextBlurPlugin({
   useEffect(() => {
     if (!currentUser) return;
 
-    const markOwnParagraphs = () => {
+    const markOwnElements = () => {
       const rootElement = editor.getRootElement();
       if (!rootElement) return;
 
-      rootElement.querySelectorAll("p[data-user]").forEach((el) => {
+      rootElement.querySelectorAll("p[data-user], li[data-user], blockquote[data-user], ul[data-user], ol[data-user]").forEach((el) => {
         const user = el.getAttribute("data-user");
         if (user === currentUser) {
           el.setAttribute("data-own", "true");
@@ -58,10 +58,10 @@ export function TextBlurPlugin({
       });
     };
 
-    markOwnParagraphs();
+    markOwnElements();
 
     const unregister = editor.registerUpdateListener(() => {
-      setTimeout(markOwnParagraphs, 0);
+      setTimeout(markOwnElements, 0);
     });
 
     return unregister;

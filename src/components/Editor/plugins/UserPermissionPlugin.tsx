@@ -10,6 +10,7 @@ import {
   $isLineBreakNode,
   $getState,
 } from "lexical";
+import { $isListItemNode, $isListNode } from "@lexical/list";
 import { userState } from "./nodeStates";
 
 export const checkNode = (node: LexicalNode, currentUser: string) => {
@@ -24,6 +25,20 @@ export const checkNode = (node: LexicalNode, currentUser: string) => {
   return false;
 };
 
+const isInOthersContainer = (node: LexicalNode, currentUser: string): boolean => {
+  let current: LexicalNode | null = node;
+  while (current) {
+    if ($isListItemNode(current) || $isListNode(current)) {
+      const containerUser = $getState(current, userState);
+      if (containerUser && containerUser.username !== currentUser) {
+        return true;
+      }
+    }
+    current = current.getParent();
+  }
+  return false;
+};
+
 type UserPermissionPluginProps = {
   currentUser?: string;
 };
@@ -34,7 +49,7 @@ export function UserPermissionPlugin({
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    const handleDelete = (event: KeyboardEvent) => {
+    const handleDelete = (event: KeyboardEvent): boolean => {
       if (!currentUser) return false;
 
       let shouldPrevent = false;
@@ -44,25 +59,21 @@ export function UserPermissionPlugin({
 
         if (!$isRangeSelection(selection)) return;
 
-        // Get all nodes in the selection
         const nodes = selection.getNodes();
 
-        // Check if any of the selected nodes are ExtendedTextNodes that don't belong to the current user
         for (const node of nodes) {
-          if (checkNode(node, currentUser)) {
-            // Prevent deletion by stopping the event
+          if (checkNode(node, currentUser) || isInOthersContainer(node, currentUser)) {
             event.preventDefault();
             event.stopPropagation();
             shouldPrevent = true;
             return;
           }
 
-          // Also check child nodes recursively
           const checkNodeRecursively = (nodeToCheck: LexicalNode): boolean => {
             if ($isLineBreakNode(nodeToCheck)) {
               const previousSiblings = nodeToCheck.getPreviousSiblings();
-              for (const node of previousSiblings) {
-                if (checkNode(node, currentUser)) {
+              for (const sibling of previousSiblings) {
+                if (checkNode(sibling, currentUser)) {
                   return true;
                 }
               }
@@ -72,7 +83,6 @@ export function UserPermissionPlugin({
               return true;
             }
 
-            // Check if the node has children (ElementNode)
             if ("getChildren" in nodeToCheck) {
               const children = (nodeToCheck as any).getChildren();
               for (const child of children) {
@@ -105,24 +115,20 @@ export function UserPermissionPlugin({
 
         if (!$isRangeSelection(selection)) return;
 
-        // Get all nodes in the selection
         const nodes = selection.getNodes();
 
-        // Check if any of the selected nodes are ExtendedTextNodes that don't belong to the current user
         for (const node of nodes) {
-          if (checkNode(node, currentUser)) {
-            // Prevent typing by stopping the event
+          if (checkNode(node, currentUser) || isInOthersContainer(node, currentUser)) {
             event.preventDefault();
             event.stopPropagation();
             return;
           }
 
-          // Also check child nodes recursively
           const checkNodeRecursively = (nodeToCheck: LexicalNode): boolean => {
             if ($isLineBreakNode(nodeToCheck)) {
               const previousSiblings = nodeToCheck.getPreviousSiblings();
-              for (const node of previousSiblings) {
-                if (checkNode(node, currentUser)) {
+              for (const sibling of previousSiblings) {
+                if (checkNode(sibling, currentUser)) {
                   return true;
                 }
               }
@@ -132,7 +138,6 @@ export function UserPermissionPlugin({
               return true;
             }
 
-            // Check if the node has children (ElementNode)
             if ("getChildren" in nodeToCheck) {
               const children = (nodeToCheck as any).getChildren();
               for (const child of children) {
@@ -154,7 +159,6 @@ export function UserPermissionPlugin({
       });
     };
 
-    // Register command handlers for DELETE and BACKSPACE
     const unregisterDelete = editor.registerCommand(
       KEY_DELETE_COMMAND,
       handleDelete,
@@ -167,7 +171,6 @@ export function UserPermissionPlugin({
       COMMAND_PRIORITY_HIGH
     );
 
-    // Add beforeinput event listener to prevent typing
     const rootElement = editor.getRootElement();
     if (rootElement) {
       rootElement.addEventListener("beforeinput", handleBeforeInput);

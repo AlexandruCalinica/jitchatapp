@@ -321,11 +321,167 @@ p[data-user][data-timestamp] {
   }
 }
 
-p[data-user][data-draft="true"]:not([data-own]) span {
+p[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
   filter: blur(3px);
   transition: filter 0.2s ease-in-out;
 }
 
-[data-peek] p[data-user][data-draft="true"]:not([data-own]) span {
+[data-peek] p[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
   filter: none;
+}
+
+/* Blockquote styles */
+blockquote[data-user] {
+  position: relative;
+  padding-left: 36px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-left: 3px solid var(--color-gray-300);
+  margin-left: 4px;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-style: italic;
+  color: var(--color-gray-600);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  &::after {
+    content: "@" attr(data-user);
+    display: inline-block;
+    position: absolute;
+    top: 8px;
+    right: 4px;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--color-gray-500);
+    font-style: normal;
+  }
+
+  &::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background-image: url('https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+  }
+}
+
+blockquote[data-user][data-draft="true"] {
+  border-left: 3px dashed var(--color-gray-400);
+  background-color: var(--color-gray-50);
+
+  &::after {
+    content: "@" attr(data-user) " · drafting...";
+    color: var(--color-gray-400);
+    font-style: normal;
+  }
+}
+
+blockquote[data-user][data-timestamp] {
+  border-left: 3px solid #3b82f6;
+  background-color: transparent;
+  animation: commitFlash 300ms ease-out;
+
+  &::after {
+    content: "@" attr(data-user) " · " attr(data-time);
+    color: var(--color-gray-500);
+    font-style: normal;
+    animation: timestampFadeIn 250ms ease-out;
+  }
+}
+
+blockquote[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
+  filter: blur(3px);
+  transition: filter 0.2s ease-in-out;
+}
+
+[data-peek] blockquote[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
+  filter: none;
+}
+
+/* List container styles - message block with avatar */
+ul[data-user],
+ol[data-user] {
+  position: relative;
+  padding-left: 36px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-left: 3px solid var(--color-gray-300);
+  margin-left: 4px;
+  margin-bottom: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  &::after {
+    content: "@" attr(data-user);
+    display: inline-block;
+    position: absolute;
+    top: 8px;
+    right: 4px;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--color-gray-500);
+  }
+
+  &::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background-image: url('https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+  }
+}
+
+ul[data-user][data-draft="true"],
+ol[data-user][data-draft="true"] {
+  border-left: 3px dashed var(--color-gray-400);
+  background-color: var(--color-gray-50);
+
+  &::after {
+    content: "@" attr(data-user) " · drafting...";
+    color: var(--color-gray-400);
+    font-style: italic;
+  }
+}
+
+ul[data-user][data-timestamp],
+ol[data-user][data-timestamp] {
+  border-left: 3px solid #3b82f6;
+  background-color: transparent;
+  animation: commitFlash 300ms ease-out;
+
+  &::after {
+    content: "@" attr(data-user) " · " attr(data-time);
+    color: var(--color-gray-500);
+    font-style: normal;
+    animation: timestampFadeIn 250ms ease-out;
+  }
+}
+
+ul[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup),
+ol[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
+  filter: blur(3px);
+  transition: filter 0.2s ease-in-out;
+}
+
+[data-peek] ul[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup),
+[data-peek] ol[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
+  filter: none;
+}
+
+/* List item styles - nested content, no individual avatar */
+li[data-user] {
+  margin-left: 16px;
 }

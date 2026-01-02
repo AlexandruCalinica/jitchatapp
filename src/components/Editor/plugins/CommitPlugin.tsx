@@ -8,10 +8,17 @@ import {
   $setState,
   COMMAND_PRIORITY_HIGH,
   createCommand,
+  LexicalNode,
+  ElementNode,
 } from "lexical";
+import { $isListItemNode, $isListNode } from "@lexical/list";
+import { $isQuoteNode } from "@lexical/rich-text";
 
 import { $isExtendedTextNode } from "../nodes/ExtendedTextNode";
 import { $isExtendedParagraphNode } from "../nodes/ExtendedParagraphNode";
+import { $isExtendedListItemNode } from "../nodes/ExtendedListItemNode";
+import { $isExtendedListNode } from "../nodes/ExtendedListNode";
+import { $isExtendedQuoteNode } from "../nodes/ExtendedQuoteNode";
 import { userState, draftState, timestampState } from "./nodeStates";
 import { User } from "../shared/types";
 
@@ -35,23 +42,39 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
         if (!$isRangeSelection(selection)) return;
 
         const anchorNode = selection.anchor.getNode();
-        const paragraphNode = $isParagraphNode(anchorNode)
-          ? anchorNode
-          : anchorNode.getParent();
+        let containerNode: ElementNode | null = null;
 
-        if (!paragraphNode || !$isExtendedParagraphNode(paragraphNode)) {
+        if ($isParagraphNode(anchorNode) || $isListItemNode(anchorNode) || $isQuoteNode(anchorNode)) {
+          containerNode = anchorNode as ElementNode;
+        } else {
+          const parent = anchorNode.getParent();
+          if (parent && ($isParagraphNode(parent) || $isListItemNode(parent) || $isQuoteNode(parent))) {
+            containerNode = parent;
+          }
+        }
+
+        if (!containerNode) {
           return;
         }
 
-        const paragraphUser = $getState(paragraphNode, userState);
-        if (paragraphUser?.username !== currentUser.username) {
+        const isExtendedContainer = 
+          $isExtendedParagraphNode(containerNode) || 
+          $isExtendedListItemNode(containerNode) || 
+          $isExtendedQuoteNode(containerNode);
+
+        if (!isExtendedContainer) {
+          return;
+        }
+
+        const containerUser = $getState(containerNode, userState);
+        if (containerUser?.username !== currentUser.username) {
           return;
         }
 
         const timestamp = Date.now();
         let hasChanges = false;
 
-        paragraphNode.getChildren().forEach((child) => {
+        containerNode.getChildren().forEach((child: LexicalNode) => {
           if ($isExtendedTextNode(child)) {
             const nodeUser = $getState(child, userState);
             const isDraft = $getState(child, draftState);
@@ -65,11 +88,22 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
         });
 
         if (hasChanges) {
-          const paragraphIsDraft = $getState(paragraphNode, draftState);
-          if (paragraphIsDraft) {
-            $setState(paragraphNode, draftState, false);
+          const containerIsDraft = $getState(containerNode, draftState);
+          if (containerIsDraft) {
+            $setState(containerNode, draftState, false);
           }
-          $setState(paragraphNode, timestampState, timestamp);
+          $setState(containerNode, timestampState, timestamp);
+
+          if ($isListItemNode(containerNode)) {
+            const listParent = containerNode.getParent();
+            if (listParent && $isListNode(listParent) && $isExtendedListNode(listParent)) {
+              const listUser = $getState(listParent, userState);
+              if (listUser?.username === currentUser.username) {
+                $setState(listParent, draftState, false);
+                $setState(listParent, timestampState, timestamp);
+              }
+            }
+          }
         }
       });
 

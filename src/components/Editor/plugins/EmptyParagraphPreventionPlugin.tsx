@@ -11,6 +11,7 @@ import {
   COMMAND_PRIORITY_CRITICAL,
   INSERT_PARAGRAPH_COMMAND,
 } from "lexical";
+import { $isListItemNode, $isListNode } from "@lexical/list";
 
 import { userState } from "./nodeStates";
 import {
@@ -71,8 +72,28 @@ export function EmptyParagraphPreventionPlugin({
           return false;
         }
 
-        // Get the current paragraph node
         const anchorNode = selection.anchor.getNode();
+        
+        let listItemNode = null;
+        let listNode = null;
+        if ($isListItemNode(anchorNode)) {
+          listItemNode = anchorNode;
+          listNode = anchorNode.getParent();
+        } else {
+          const parent = anchorNode.getParent();
+          if ($isListItemNode(parent)) {
+            listItemNode = parent;
+            listNode = parent.getParent();
+          }
+        }
+
+        if (listItemNode && listNode && $isListNode(listNode)) {
+          const listUserState = $getState(listNode, userState);
+          if (listUserState?.username !== currentUser.username) {
+            return true;
+          }
+        }
+
         const paragraphNode = $isParagraphNode(anchorNode)
           ? anchorNode
           : anchorNode.getParent();
@@ -99,11 +120,9 @@ export function EmptyParagraphPreventionPlugin({
           }
         }
 
-        // Check if the paragraph is empty or contains only whitespace
         const paragraphText = paragraphNode.getTextContent().trim();
 
         if (paragraphText === "") {
-          // Prevent the default Enter behavior by returning true
           return true;
         }
 
@@ -111,12 +130,10 @@ export function EmptyParagraphPreventionPlugin({
       });
 
       if (shouldHandle) {
-        // Now handle the creation and selection in update mode
         editor.update(() => {
           const root = $getRoot();
           const newParagraph = $createExtendedParagraphNode(currentUser, configState.defaultDraft);
 
-          // Insert the new paragraph at the end
           root.append(newParagraph);
 
           newParagraph.selectStart();
@@ -129,7 +146,6 @@ export function EmptyParagraphPreventionPlugin({
     };
 
     const handleLineBreakInsert = (_event: KeyboardEvent) => {
-      // First, check the current state in read mode
       const shouldHandle = editor.getEditorState().read(() => {
         const selection = $getSelection();
 
@@ -138,6 +154,27 @@ export function EmptyParagraphPreventionPlugin({
         }
 
         const anchorNode = selection.anchor.getNode();
+
+        let listItemNode = null;
+        let listNode = null;
+        if ($isListItemNode(anchorNode)) {
+          listItemNode = anchorNode;
+          listNode = anchorNode.getParent();
+        } else {
+          const parent = anchorNode.getParent();
+          if ($isListItemNode(parent)) {
+            listItemNode = parent;
+            listNode = parent.getParent();
+          }
+        }
+
+        if (listItemNode && listNode && $isListNode(listNode)) {
+          const listUserState = $getState(listNode, userState);
+          if (listUserState?.username !== currentUser.username) {
+            return true;
+          }
+        }
+
         const paragraphNode = $isParagraphNode(anchorNode)
           ? anchorNode
           : anchorNode.getParent();
@@ -152,12 +189,10 @@ export function EmptyParagraphPreventionPlugin({
       });
 
       if (shouldHandle) {
-        // Now handle the creation and selection in update mode
         editor.update(() => {
           const root = $getRoot();
           const newParagraph = $createExtendedParagraphNode(currentUser, configState.defaultDraft);
 
-          // Insert the new paragraph at the end
           root.append(newParagraph);
 
           newParagraph.selectStart();

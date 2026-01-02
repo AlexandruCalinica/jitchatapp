@@ -16,6 +16,18 @@ import {
   $createExtendedLineBreakNode,
   ExtendedLineBreakNode,
 } from "./ExtendedLineBreakNode";
+import {
+  $createExtendedQuoteNode,
+  ExtendedQuoteNode,
+} from "./ExtendedQuoteNode";
+import {
+  $createExtendedListNode,
+  ExtendedListNode,
+} from "./ExtendedListNode";
+import {
+  $createExtendedListItemNode,
+  ExtendedListItemNode,
+} from "./ExtendedListItemNode";
 import { User } from "../shared/types";
 import { configState } from "../shared/state";
 
@@ -29,11 +41,11 @@ export const createNodes = (user?: User) => [
   ExtendedParagraphNode,
   ExtendedTextNode,
   ExtendedLineBreakNode,
+  ExtendedQuoteNode,
+  ExtendedListNode,
+  ExtendedListItemNode,
   HeadingNode,
   CodeNode,
-  ListNode,
-  ListItemNode,
-  QuoteNode,
   {
     replace: ParagraphNode,
     with: () => $createExtendedParagraphNode(user, configState.defaultDraft),
@@ -48,5 +60,20 @@ export const createNodes = (user?: User) => [
     replace: LineBreakNode,
     with: () => $createExtendedLineBreakNode(user),
     withKlass: ExtendedLineBreakNode,
+  },
+  {
+    replace: QuoteNode,
+    with: () => $createExtendedQuoteNode(user, configState.defaultDraft),
+    withKlass: ExtendedQuoteNode,
+  },
+  {
+    replace: ListNode,
+    with: (node: ListNode) => $createExtendedListNode(node.getListType(), user, configState.defaultDraft),
+    withKlass: ExtendedListNode,
+  },
+  {
+    replace: ListItemNode,
+    with: () => $createExtendedListItemNode(user, configState.defaultDraft),
+    withKlass: ExtendedListItemNode,
   },
 ];

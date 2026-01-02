@@ -57,6 +57,7 @@ import { DraftTogglePlugin } from "./plugins/DraftTogglePlugin";
 import { ParagraphDraftPlugin } from "./plugins/ParagraphDraftPlugin";
 import { EmptyParagraphPreventionPlugin } from "./plugins/EmptyParagraphPreventionPlugin";
 import { CommitPlugin } from "./plugins/CommitPlugin";
+import { NodeTransformPlugin } from "./plugins/NodeTransformPlugin";
 import { syncCursorPositions } from "./plugins/Collaboration/SyncCursors";
 import { User } from "./shared/types";
 import { useConfigState } from "./shared/state";
@@ -410,6 +411,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
             enabled={preventEmptyParagraphs}
           />
           <CommitPlugin currentUser={user} />
+          <NodeTransformPlugin currentUser={user} />
 
           {floatingAnchorElem && !usePlainText && (
             <>
