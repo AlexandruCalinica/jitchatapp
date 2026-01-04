@@ -51,6 +51,8 @@ import ComponentPickerPlugin from "./plugins/ComponentPicker";
 import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
 import { FloatingMenuPlugin } from "./plugins/FloatingTextFormatToolbarPlugin";
 import { LinkPastePlugin } from "./plugins/PastePlugin.tsx";
+import ImagesPlugin from "./plugins/ImagesPlugin";
+import DragDropPastePlugin from "./plugins/DragDropPastePlugin";
 import { UserPermissionPlugin } from "./plugins/UserPermissionPlugin";
 import { TextBlurPlugin } from "./plugins/TextBlurPlugin";
 import { DraftTogglePlugin } from "./plugins/DraftTogglePlugin";
@@ -367,6 +369,8 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           <AutoFocusPlugin />
           <TextNodeTransformer />
           <ListPlugin />
+          <ImagesPlugin />
+          <DragDropPastePlugin />
 
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
 

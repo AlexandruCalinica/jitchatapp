@@ -8,6 +8,7 @@ import { userState, draftState } from "./nodeStates";
 import { ExtendedListItemNode } from "../nodes/ExtendedListItemNode";
 import { ExtendedListNode } from "../nodes/ExtendedListNode";
 import { ExtendedQuoteNode } from "../nodes/ExtendedQuoteNode";
+import { ExtendedImageNode } from "../nodes/ExtendedImageNode";
 
 type NodeTransformPluginProps = {
   currentUser?: User;
@@ -64,10 +65,26 @@ export function NodeTransformPlugin({
       }
     );
 
+    const removeImageTransform = editor.registerNodeTransform(
+      ExtendedImageNode,
+      (node) => {
+        const existingUser = $getState(node, userState);
+
+        if (!existingUser) {
+          const user = currentUser || configState.currentUser;
+          if (user) {
+            $setState(node, userState, user);
+            $setState(node, draftState, configState.defaultDraft);
+          }
+        }
+      }
+    );
+
     return () => {
       removeListTransform();
       removeListItemTransform();
       removeQuoteTransform();
+      removeImageTransform();
     };
   }, [editor, currentUser]);
 

@@ -3,6 +3,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $getSelection,
   $isRangeSelection,
+  $isParagraphNode,
   KEY_DELETE_COMMAND,
   KEY_BACKSPACE_COMMAND,
   COMMAND_PRIORITY_HIGH,
@@ -11,6 +12,7 @@ import {
   $getState,
 } from "lexical";
 import { $isListItemNode, $isListNode } from "@lexical/list";
+import { $isQuoteNode } from "@lexical/rich-text";
 import { userState } from "./nodeStates";
 
 export const checkNode = (node: LexicalNode, currentUser: string) => {
@@ -28,7 +30,7 @@ export const checkNode = (node: LexicalNode, currentUser: string) => {
 const isInOthersContainer = (node: LexicalNode, currentUser: string): boolean => {
   let current: LexicalNode | null = node;
   while (current) {
-    if ($isListItemNode(current) || $isListNode(current)) {
+    if ($isParagraphNode(current) || $isListItemNode(current) || $isListNode(current) || $isQuoteNode(current)) {
       const containerUser = $getState(current, userState);
       if (containerUser && containerUser.username !== currentUser) {
         return true;

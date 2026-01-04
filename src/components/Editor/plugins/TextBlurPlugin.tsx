@@ -48,7 +48,7 @@ export function TextBlurPlugin({
       const rootElement = editor.getRootElement();
       if (!rootElement) return;
 
-      rootElement.querySelectorAll("p[data-user], li[data-user], blockquote[data-user], ul[data-user], ol[data-user]").forEach((el) => {
+      rootElement.querySelectorAll("p[data-user], li[data-user], blockquote[data-user], ul[data-user], ol[data-user], span[data-user]").forEach((el) => {
         const user = el.getAttribute("data-user");
         if (user === currentUser) {
           el.setAttribute("data-own", "true");

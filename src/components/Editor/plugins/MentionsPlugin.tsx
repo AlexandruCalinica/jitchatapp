@@ -7,7 +7,6 @@ import {
   MenuOption,
   MenuTextMatch,
   LexicalTypeaheadMenuPlugin,
-  useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 
 import { clsx } from "clsx";
@@ -168,9 +167,7 @@ export default function NewMentionsPlugin({
 }: MentionsPluginProps): React.ReactNode | null {
   const [editor] = useLexicalComposerContext();
 
-  const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
-    minLength: 0,
-  });
+
 
   const _options = useMemo(
     () =>
@@ -207,15 +204,10 @@ export default function NewMentionsPlugin({
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
-      const slashMatch = checkForSlashTriggerMatch(text, editor);
-
-      if (slashMatch !== null) {
-        return null;
-      }
-
+      console.log("[MentionsPlugin] checkForMentionMatch called with:", JSON.stringify(text));
       return getPossibleQueryMatch(text);
     },
-    [checkForSlashTriggerMatch, editor]
+    []
   );
 
   return (

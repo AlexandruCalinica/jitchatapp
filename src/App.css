@@ -485,3 +485,25 @@ ol[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, cod
 li[data-user] {
   margin-left: 16px;
 }
+
+span[data-user]:has(> div > img) {
+  display: block;
+  margin: 4px 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+span[data-user]:has(> div > img)::before,
+span[data-user]:has(> div > img)::after {
+  display: none;
+}
+
+span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
+  filter: blur(8px);
+  transition: filter 0.2s ease-in-out;
+}
+
+[data-peek] span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
+  filter: none;
+}

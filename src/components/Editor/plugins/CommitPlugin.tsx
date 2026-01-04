@@ -19,6 +19,7 @@ import { $isExtendedParagraphNode } from "../nodes/ExtendedParagraphNode";
 import { $isExtendedListItemNode } from "../nodes/ExtendedListItemNode";
 import { $isExtendedListNode } from "../nodes/ExtendedListNode";
 import { $isExtendedQuoteNode } from "../nodes/ExtendedQuoteNode";
+import { $isExtendedImageNode, ExtendedImageNode } from "../nodes/ExtendedImageNode";
 import { userState, draftState, timestampState } from "./nodeStates";
 import { User } from "../shared/types";
 
@@ -43,6 +44,20 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
 
         const anchorNode = selection.anchor.getNode();
         let containerNode: ElementNode | null = null;
+
+        if ($isExtendedImageNode(anchorNode)) {
+          const imageNode = anchorNode as ExtendedImageNode;
+          const imageUser = $getState(imageNode, userState);
+          if (imageUser?.username === currentUser.username) {
+            const isDraft = $getState(imageNode, draftState);
+            if (isDraft !== false) {
+              const timestamp = Date.now();
+              $setState(imageNode, draftState, false);
+              $setState(imageNode, timestampState, timestamp);
+            }
+          }
+          return;
+        }
 
         if ($isParagraphNode(anchorNode) || $isListItemNode(anchorNode) || $isQuoteNode(anchorNode)) {
           containerNode = anchorNode as ElementNode;
@@ -76,6 +91,15 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
 
         containerNode.getChildren().forEach((child: LexicalNode) => {
           if ($isExtendedTextNode(child)) {
+            const nodeUser = $getState(child, userState);
+            const isDraft = $getState(child, draftState);
+
+            if (nodeUser?.username === currentUser.username && isDraft !== false) {
+              $setState(child, draftState, false);
+              $setState(child, timestampState, timestamp);
+              hasChanges = true;
+            }
+          } else if ($isExtendedImageNode(child)) {
             const nodeUser = $getState(child, userState);
             const isDraft = $getState(child, draftState);
 

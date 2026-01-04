@@ -4,10 +4,9 @@ import { useMemo, useCallback } from 'react';
 import { TextNode } from 'lexical';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
+  LexicalTypeaheadMenuPlugin,
   MenuOption,
   MenuTextMatch,
-  LexicalTypeaheadMenuPlugin,
-  useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
 
 import { clsx } from 'clsx';
@@ -148,9 +147,7 @@ export default function NewHashtagsPlugin({
 }: HashtagsPluginProps): React.ReactNode | null {
   const [editor] = useLexicalComposerContext();
 
-  const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
-    minLength: 0,
-  });
+
 
   const _options = useMemo(
     () =>
@@ -191,15 +188,9 @@ export default function NewHashtagsPlugin({
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
-      const slashMatch = checkForSlashTriggerMatch(text, editor);
-
-      if (slashMatch !== null) {
-        return null;
-      }
-
       return getPossibleQueryMatch(text);
     },
-    [checkForSlashTriggerMatch, editor]
+    []
   );
 
   return (

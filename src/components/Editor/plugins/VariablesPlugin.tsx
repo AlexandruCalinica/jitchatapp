@@ -4,10 +4,9 @@ import { useMemo, useState, useCallback } from 'react';
 import { TextNode } from 'lexical';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
+  LexicalTypeaheadMenuPlugin,
   MenuOption,
   MenuTextMatch,
-  LexicalTypeaheadMenuPlugin,
-  useBasicTypeaheadTriggerMatch,
 } from '@lexical/react/LexicalTypeaheadMenuPlugin';
 
 import { clsx } from 'clsx';
@@ -151,9 +150,7 @@ export default function VariablesPlugin({ options }: MentionsPluginProps): React
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
 
-  const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
-    minLength: 0,
-  });
+
 
   const _options = useMemo(() => {
     const res = options
@@ -188,15 +185,9 @@ export default function VariablesPlugin({ options }: MentionsPluginProps): React
 
   const checkForMentionMatch = useCallback(
     (text: string) => {
-      const slashMatch = checkForSlashTriggerMatch(text, editor);
-
-      if (slashMatch !== null) {
-        return null;
-      }
-
       return getPossibleQueryMatch(text);
     },
-    [checkForSlashTriggerMatch, editor]
+    []
   );
 
   return (

@@ -25,7 +25,7 @@ import {
   LexicalEditor,
   TextNode,
 } from "lexical";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import ParagraphIcon from "~icons/icon-park-outline/paragraph-alphabet";
 import H1Icon from "~icons/icon-park-outline/h1";
@@ -46,17 +46,8 @@ import DraftIcon from "~icons/icon-park-outline/edit-one";
 import { cn } from "../../../util/cn";
 import { TOGGLE_DRAFT_COMMAND } from "./DraftTogglePlugin";
 
-// import useModal from "../../hooks/useModal";
-// import catTypingGif from "../../images/cat-typing.gif";
-// import { EmbedConfigs } from "../AutoEmbedPlugin";
-// import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
-// import { InsertEquationDialog } from "../EquationsPlugin";
-// import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
-// import { INSERT_IMAGE_COMMAND, InsertImageDialog } from "../ImagesPlugin";
-// import InsertLayoutDialog from "../LayoutPlugin/InsertLayoutDialog";
-// import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
-// import { InsertPollDialog } from "../PollPlugin";
-// import { InsertTableDialog } from "../TablePlugin";
+import ImageIcon from "~icons/icon-park-outline/picture-one";
+import { INSERT_IMAGE_COMMAND } from "./ImagesPlugin";
 
 class ComponentPickerOption extends MenuOption {
   // What shows up in the editor
@@ -255,6 +246,22 @@ function getBaseOptions(editor: LexicalEditor, _showModal: any) {
       keywords: ["draft", "private", "toggle", "visibility"],
       onSelect: () => editor.dispatchCommand(TOGGLE_DRAFT_COMMAND, undefined),
     }),
+    new ComponentPickerOption("Image", {
+      icon: <ImageIcon />,
+      keywords: ["image", "photo", "picture", "file", "img"],
+      onSelect: () => {
+        console.log("[ComponentPicker] Image option selected");
+        const url = prompt("Enter image URL:");
+        console.log("[ComponentPicker] URL entered:", url);
+        if (url) {
+          console.log("[ComponentPicker] Dispatching INSERT_IMAGE_COMMAND");
+          editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+            src: url,
+            altText: "Image",
+          });
+        }
+      },
+    }),
     // new ComponentPickerOption("Page Break", {
     //   icon: <i className="icon page-break" />,
     //   keywords: ["page break", "divider"],
@@ -349,10 +356,23 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
   const showModal = false;
   const [queryString, setQueryString] = useState<string | null>(null);
 
-  const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
-    allowWhitespace: true,
+  useEffect(() => {
+    console.log("[ComponentPicker] Plugin mounted");
+  }, []);
+
+  const baseCheckForTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
   });
+  
+  const checkForTriggerMatch = useCallback(
+    (text: string, editorArg: LexicalEditor) => {
+      console.log("[ComponentPicker] checkForTriggerMatch called with text:", JSON.stringify(text));
+      const result = baseCheckForTriggerMatch(text, editorArg);
+      console.log("[ComponentPicker] Trigger result:", result);
+      return result;
+    },
+    [baseCheckForTriggerMatch]
+  );
 
   const options = useMemo(() => {
     const baseOptions = getBaseOptions(editor, showModal);

@@ -28,6 +28,7 @@ import {
   $createExtendedListItemNode,
   ExtendedListItemNode,
 } from "./ExtendedListItemNode";
+import { ExtendedImageNode } from "./ExtendedImageNode";
 import { User } from "../shared/types";
 import { configState } from "../shared/state";
 
@@ -44,6 +45,7 @@ export const createNodes = (user?: User) => [
   ExtendedQuoteNode,
   ExtendedListNode,
   ExtendedListItemNode,
+  ExtendedImageNode,
   HeadingNode,
   CodeNode,
   {
