@@ -197,7 +197,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
       variableOptions = [],
       usePlainText = false,
       placeholderClassName,
-      onKeyDown,
+      onKeyDown: _onKeyDown,
       useYjs = false,
       user,
       placeholder = "Type something",
@@ -523,7 +523,7 @@ export type CursorSelection = {
   selections: Array<HTMLElement>;
 };
 
-function createCursorSelection(
+export function createCursorSelection(
   cursor: Cursor,
   anchorKey: NodeKey,
   anchorOffset: number,

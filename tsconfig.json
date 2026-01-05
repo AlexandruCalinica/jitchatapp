@@ -20,8 +20,15 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "types": ["unplugin-icons/types/react"]
+    "types": ["unplugin-icons/types/react", "node"]
   },
   "include": ["src"],
+  "exclude": [
+    "src/**/codegen-*.ts",
+    "src/hooks/useChannel.ts",
+    "src/hooks/useEvents.ts",
+    "src/hooks/index.ts",
+    "src/contexts/presence.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -40,7 +40,6 @@ import { FloatingToolbarButton } from "../components";
 import { sanitizeUrl } from "../utils/url";
 import { getSelectedNode } from "../utils/getSelectedNode";
 import { usePointerInteractions } from "../utils/usePointerInteractions";
-import { Icon } from "../../Icon/Icon";
 import { getExternalUrl } from "../utils/getExternalLink";
 
 const DEFAULT_DOM_ELEMENT = document.body;

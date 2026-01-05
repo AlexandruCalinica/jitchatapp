@@ -1,4 +1,3 @@
-import React from "react";
 import { Editor } from "../Editor";
 import { useConfigState } from "../shared/state";
 
@@ -29,7 +28,7 @@ export function ParagraphDraftExample() {
           placeholder="Type something to test paragraph draft behavior..."
           user={{
             username: "current-user",
-            cursorColor: "#3b82f6",
+            color: "#3b82f6",
           }}
           textBlur={{
             unlockKey: "Alt",

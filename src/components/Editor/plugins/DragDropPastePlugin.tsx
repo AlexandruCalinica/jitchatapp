@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { INSERT_IMAGE_COMMAND } from "./ImagesPlugin";
 import { userState } from "./nodeStates";
 import { configState } from "../shared/state";
+import { uploadImage } from "../../../services/upload";
 
 const ACCEPTABLE_IMAGE_TYPES = [
   "image/",
@@ -42,6 +43,15 @@ function readFileAsDataUrl(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+async function getImageSource(file: File): Promise<string> {
+  try {
+    const uploaded = await uploadImage(file);
+    return uploaded.url;
+  } catch {
+    return readFileAsDataUrl(file);
+  }
 }
 
 function canInsertInCurrentSelection(editor: ReturnType<typeof useLexicalComposerContext>[0]): boolean {
@@ -108,9 +118,9 @@ export default function DragDropPastePlugin(): null {
       e.stopPropagation();
 
       for (const file of imageFiles) {
-        const dataUrl = await readFileAsDataUrl(file);
+        const src = await getImageSource(file);
         editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-          src: dataUrl,
+          src,
           altText: file.name,
         });
       }
@@ -128,9 +138,9 @@ export default function DragDropPastePlugin(): null {
         if (!canInsertInCurrentSelection(editor)) return;
         e.preventDefault();
         for (const file of imageFiles) {
-          const dataUrl = await readFileAsDataUrl(file);
+          const src = await getImageSource(file);
           editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-            src: dataUrl,
+            src,
             altText: file.name,
           });
         }
@@ -143,9 +153,9 @@ export default function DragDropPastePlugin(): null {
           if (file) {
             if (!canInsertInCurrentSelection(editor)) return;
             e.preventDefault();
-            const dataUrl = await readFileAsDataUrl(file);
+            const src = await getImageSource(file);
             editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-              src: dataUrl,
+              src,
               altText: "Pasted image",
             });
             return;

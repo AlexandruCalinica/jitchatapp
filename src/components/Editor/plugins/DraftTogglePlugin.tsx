@@ -21,7 +21,7 @@ type DraftTogglePluginProps = {
 
 export function DraftTogglePlugin({
   currentUser,
-  draftMode = "default",
+  draftMode: _draftMode = "default",
 }: DraftTogglePluginProps) {
   const [editor] = useLexicalComposerContext();
 

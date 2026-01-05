@@ -152,6 +152,9 @@ pub fn run() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_opener::init())
         .manage(AudioCaptureState(Mutex::new(None)))
         .manage(TranscriberState(Mutex::new(transcriber)))
         .invoke_handler(tauri::generate_handler![

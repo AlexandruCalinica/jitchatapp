@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useCallback } from "react";
 
 import { Channel, Socket } from "phoenix";
+import { useAuth } from "./auth";
 
 const PhoenixSocketContext = createContext<{
   socket: Socket | null;
@@ -35,6 +36,7 @@ const channelPromise = (
 };
 
 const PhoenixSocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const { token } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [channels, setChannels] = useState<Map<string, Channel>>(new Map());
 
@@ -59,21 +61,35 @@ const PhoenixSocketProvider = ({ children }: { children: React.ReactNode }) => {
 
       return channels.get(channelName) as Channel;
     },
-    [socket, setChannels]
+    [socket, channels]
   );
 
   useEffect(() => {
+    if (!token) {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+        setChannels(new Map());
+      }
+      return;
+    }
+
     try {
-      const socket = new Socket(socketPath);
+      const newSocket = new Socket(socketPath, {
+        params: { token }
+      });
 
-      socket.connect();
+      newSocket.connect();
 
-      setSocket(socket);
+      setSocket(newSocket);
+
+      return () => {
+        newSocket.disconnect();
+      };
     } catch (e) {
       console.log("error connecting to socket", e);
-      // TODO: log error
     }
-  }, [socketPath]);
+  }, [token]);
 
   return (
     <PhoenixSocketContext.Provider value={{ socket, createChannel, channels }}>

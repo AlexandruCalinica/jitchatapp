@@ -1,4 +1,5 @@
 import { PhoenixSocketProvider } from "./contexts/phoenix-socket";
+import { AuthProvider, useAuth } from "./contexts/auth";
 import "./App.css";
 import Editor from "./components/Editor/Editor";
 import { formatDate, formatDistanceToNow } from "date-fns";
@@ -6,18 +7,15 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 import LeftTwo from "~icons/icon-park-outline/left-two";
 import RightTwo from "~icons/icon-park-outline/right-two";
-import { Input } from "./components/Input";
 import { Button } from "./components/Button";
 import { useState, useEffect } from "react";
 import { LogicalSize } from "@tauri-apps/api/dpi";
-// import { getAllWindows } from "@tauri-apps/api/window";
-import { getConfigValue } from "./components/Editor/shared/state";
+import { LoginScreen } from "./components/LoginScreen";
 
 function createWebviewWindow() {
   const label = `n1-copy-${Math.random().toString(36).substring(2, 15)}`;
   const webview = new WebviewWindow(label);
   webview.setSize(new LogicalSize(800, 600));
-  // webviewMap[label] = webview
   webview.once("tauri://error", function (e) {
     console.log("Error creating new webview " + JSON.stringify(e));
   });
@@ -26,26 +24,18 @@ function createWebviewWindow() {
   });
 }
 
-function App() {
+function MainApp() {
+  const { user, isLoading, isAuthenticated, login, logout } = useAuth();
+  const [draftMode] = useState<"always" | "default">("default");
+
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
   const dayBeforeYesterday = new Date(today);
   dayBeforeYesterday.setDate(today.getDate() - 2);
 
-  // temp
-  const [isOk, setIsOk] = useState(false);
-  const [user, setUser] = useState<{ username: string; color: string }>({
-    username: "",
-    color: "#000000",
-  });
-
-  const [draftMode, setDraftMode] = useState<"always" | "default">("default");
-
-  // Add keyboard event listener for Cmd + Shift + N
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Check for Cmd + Shift + N (metaKey is Cmd on Mac, ctrlKey on Windows/Linux)
       if (
         (event.metaKey || event.ctrlKey) &&
         event.shiftKey &&
@@ -56,10 +46,7 @@ function App() {
       }
     };
 
-    // Add event listener
     document.addEventListener("keydown", handleKeyDown);
-
-    // Cleanup function to remove event listener
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -122,24 +109,14 @@ function App() {
     },
   ];
 
-  if (!isOk) {
-    return (
-      <div className="flex flex-col gap-2 max-w-md mx-auto justify-center items-center h-screen">
-        <Input
-          variant="outline"
-          placeholder="Username"
-          value={user.username}
-          onChange={(e) =>
-            setUser((prev) => ({
-              ...prev,
-              username: e.target.value,
-            }))
-          }
-        />
-        <Button onClick={() => setIsOk(true)}>Ok</Button>
-      </div>
-    );
+  if (!isAuthenticated) {
+    return <LoginScreen onLogin={login} isLoading={isLoading} />;
   }
+
+  const editorUser = {
+    username: user?.username ?? "anonymous",
+    color: user?.color ?? "#000000",
+  };
 
   return (
     <PhoenixSocketProvider>
@@ -178,30 +155,16 @@ function App() {
               <p>Yesterday</p>
             </div>
             <div className="flex items-center gap-2">
-              {/* <Button
-                size="xs"
-                onClick={() => {
-                  setDraftMode(draftMode === "always" ? "default" : "always");
-                }}
-              >
-                Draft: {draftMode}
-              </Button> */}
-
-              <Button
-                size="xs"
-                variant="outline"
-                onClick={() => setIsOk(false)}
-              >
-                Change user
+              <Button size="xs" variant="outline" onClick={logout}>
+                Logout
               </Button>
-
-              <p>{user.username}</p>
+              <p>{user?.username}</p>
             </div>
             <p>Today</p>
           </div>
           <div>
             <Editor
-              user={user}
+              user={editorUser}
               documentId="doc_avarh0wicwaeg1dj"
               namespace="main"
               useYjs
@@ -216,6 +179,14 @@ function App() {
         </div>
       </main>
     </PhoenixSocketProvider>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }
 
