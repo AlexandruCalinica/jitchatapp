@@ -6,12 +6,14 @@ type ConfigState = {
   defaultDraft: boolean;
   collapseDraftParagraphs: boolean;
   currentUser: User | null;
+  channelId: string | null;
 };
 
 export const configState: ConfigState = {
   defaultDraft: true,
   collapseDraftParagraphs: false,
   currentUser: null,
+  channelId: null,
 };
 
 export const getConfigValue = (key: keyof ConfigState) => {

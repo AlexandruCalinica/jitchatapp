@@ -1,23 +1,32 @@
 import { getToken, getBackendUrl } from './auth';
 
 export interface UploadedImage {
+  id: string;
   url: string;
   filename: string;
+  content_type: string;
+  size: number;
+  width?: number;
+  height?: number;
+  uploaded_by: string;
+  uploaded_at: string;
 }
 
-export async function uploadImage(file: File, channelId?: string): Promise<UploadedImage> {
+export async function uploadImage(file: File, channelId: string): Promise<UploadedImage> {
   const token = await getToken();
   if (!token) {
     throw new Error('Not authenticated');
   }
 
-  const formData = new FormData();
-  formData.append('file', file);
-  if (channelId) {
-    formData.append('channel_id', channelId);
+  if (!channelId) {
+    throw new Error('Channel ID is required');
   }
 
-  const response = await fetch(`${getBackendUrl()}/api/uploads/image`, {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('channel_id', channelId);
+
+  const response = await fetch(`${getBackendUrl()}/api/uploads/images`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -31,8 +40,5 @@ export async function uploadImage(file: File, channelId?: string): Promise<Uploa
   }
 
   const { data } = await response.json();
-  return {
-    url: data.url,
-    filename: data.filename,
-  };
+  return data as UploadedImage;
 }

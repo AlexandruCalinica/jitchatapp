@@ -352,6 +352,14 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
       }
     }, [user]);
 
+    useEffect(() => {
+      if (documentId) {
+        setConfigState({
+          channelId: `documents:${documentId}`,
+        });
+      }
+    }, [documentId]);
+
     if (!socket) {
       return <div>No socket</div>;
     }

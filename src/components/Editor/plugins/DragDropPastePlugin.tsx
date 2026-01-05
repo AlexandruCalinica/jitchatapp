@@ -46,8 +46,13 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 async function getImageSource(file: File): Promise<string> {
+  const channelId = configState.channelId;
+  if (!channelId) {
+    return readFileAsDataUrl(file);
+  }
+
   try {
-    const uploaded = await uploadImage(file);
+    const uploaded = await uploadImage(file, channelId);
     return uploaded.url;
   } catch {
     return readFileAsDataUrl(file);
