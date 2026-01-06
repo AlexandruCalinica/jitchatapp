@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { configState } from "../shared/state";
-import { User } from "../shared/types";
+import { User, isSameUser } from "../shared/types";
 import { $isExtendedImageNode } from "./ExtendedImageNode";
 
 interface ImageComponentProps {
@@ -45,7 +45,7 @@ export default function ImageComponent({
   const [isHovered, setIsHovered] = useState(false);
 
   const currentUser = configState.currentUser;
-  const isOwner = currentUser?.username === user?.username;
+  const isOwner = isSameUser(user, currentUser);
 
   const deleteNode = useCallback(() => {
     if (!isOwner) return;

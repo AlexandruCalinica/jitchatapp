@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useConfigState } from "../shared/state";
+import { User } from "../shared/types";
 
 type ParagraphDraftPluginProps = {
-  currentUser?: string;
-  unlockKey?: string; // The key that unlocks collapsed paragraphs (default: 'Alt')
-  showIndicator?: boolean; // Show visual indicator when unlock key is pressed (default: true)
+  currentUser?: User;
+  unlockKey?: string;
+  showIndicator?: boolean;
 };
 
 export function ParagraphDraftPlugin({
@@ -52,15 +53,15 @@ export function ParagraphDraftPlugin({
 
       paragraphElements.forEach((element) => {
         const htmlElement = element as HTMLElement;
-        const user = htmlElement.getAttribute("data-user");
-        const isCurrentUser = user === currentUser;
+        const userAttr = htmlElement.getAttribute("data-user");
+        const isCurrentUser = userAttr === currentUser.username;
 
         // Check if this paragraph contains any draft text nodes from other users
         const draftTextNodes = htmlElement.querySelectorAll(
           "span[data-draft='true'][data-user]"
         );
         const hasOtherUserDraftText = Array.from(draftTextNodes).some(
-          (textNode) => textNode.getAttribute("data-user") !== currentUser
+          (textNode) => textNode.getAttribute("data-user") !== currentUser.username
         );
 
         if (isCurrentUser) {

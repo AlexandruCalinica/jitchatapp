@@ -404,9 +404,9 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
             />
           )}
 
-          <UserPermissionPlugin currentUser={user?.username} />
+          <UserPermissionPlugin currentUser={user} />
           <TextBlurPlugin
-            currentUser={user?.username}
+            currentUser={user}
             unlockKey={textBlur?.unlockKey || "Alt"}
           />
           <DraftTogglePlugin
@@ -414,7 +414,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
             currentUser={user?.username}
           />
           <ParagraphDraftPlugin
-            currentUser={user?.username}
+            currentUser={user}
             unlockKey={textBlur?.unlockKey || "Alt"}
             showIndicator={textBlur?.showIndicator !== false}
           />

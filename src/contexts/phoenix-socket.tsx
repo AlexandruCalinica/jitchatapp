@@ -74,21 +74,16 @@ const PhoenixSocketProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    try {
-      const newSocket = new Socket(socketPath, {
-        params: { token }
-      });
+    const newSocket = new Socket(socketPath, {
+      params: { token }
+    });
 
-      newSocket.connect();
+    newSocket.connect();
+    setSocket(newSocket);
 
-      setSocket(newSocket);
-
-      return () => {
-        newSocket.disconnect();
-      };
-    } catch (e) {
-      console.log("error connecting to socket", e);
-    }
+    return () => {
+      newSocket.disconnect();
+    };
   }, [token]);
 
   return (

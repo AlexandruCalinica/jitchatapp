@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { User } from "../shared/types";
 
 type TextBlurPluginProps = {
-  currentUser?: string;
+  currentUser?: User;
   unlockKey?: string;
 };
 
@@ -49,8 +50,8 @@ export function TextBlurPlugin({
       if (!rootElement) return;
 
       rootElement.querySelectorAll("p[data-user], li[data-user], blockquote[data-user], ul[data-user], ol[data-user], span[data-user]").forEach((el) => {
-        const user = el.getAttribute("data-user");
-        if (user === currentUser) {
+        const userAttr = el.getAttribute("data-user");
+        if (userAttr === currentUser.username) {
           el.setAttribute("data-own", "true");
         } else {
           el.removeAttribute("data-own");

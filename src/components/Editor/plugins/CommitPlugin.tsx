@@ -21,7 +21,7 @@ import { $isExtendedListNode } from "../nodes/ExtendedListNode";
 import { $isExtendedQuoteNode } from "../nodes/ExtendedQuoteNode";
 import { $isExtendedImageNode, ExtendedImageNode } from "../nodes/ExtendedImageNode";
 import { userState, draftState, timestampState } from "./nodeStates";
-import { User } from "../shared/types";
+import { User, isSameUser } from "../shared/types";
 
 export const COMMIT_MESSAGE_COMMAND = createCommand<void>(
   "COMMIT_MESSAGE_COMMAND"
@@ -48,7 +48,7 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
         if ($isExtendedImageNode(anchorNode)) {
           const imageNode = anchorNode as ExtendedImageNode;
           const imageUser = $getState(imageNode, userState);
-          if (imageUser?.username === currentUser.username) {
+          if (isSameUser(imageUser, currentUser)) {
             const isDraft = $getState(imageNode, draftState);
             if (isDraft !== false) {
               const timestamp = Date.now();
@@ -82,7 +82,7 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
         }
 
         const containerUser = $getState(containerNode, userState);
-        if (containerUser?.username !== currentUser.username) {
+        if (!isSameUser(containerUser, currentUser)) {
           return;
         }
 
@@ -94,7 +94,7 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
             const nodeUser = $getState(child, userState);
             const isDraft = $getState(child, draftState);
 
-            if (nodeUser?.username === currentUser.username && isDraft !== false) {
+            if (isSameUser(nodeUser, currentUser) && isDraft !== false) {
               $setState(child, draftState, false);
               $setState(child, timestampState, timestamp);
               hasChanges = true;
@@ -103,7 +103,7 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
             const nodeUser = $getState(child, userState);
             const isDraft = $getState(child, draftState);
 
-            if (nodeUser?.username === currentUser.username && isDraft !== false) {
+            if (isSameUser(nodeUser, currentUser) && isDraft !== false) {
               $setState(child, draftState, false);
               $setState(child, timestampState, timestamp);
               hasChanges = true;
@@ -122,7 +122,7 @@ export function CommitPlugin({ currentUser }: CommitPluginProps) {
             const listParent = containerNode.getParent();
             if (listParent && $isListNode(listParent) && $isExtendedListNode(listParent)) {
               const listUser = $getState(listParent, userState);
-              if (listUser?.username === currentUser.username) {
+              if (isSameUser(listUser, currentUser)) {
                 $setState(listParent, draftState, false);
                 $setState(listParent, timestampState, timestamp);
               }

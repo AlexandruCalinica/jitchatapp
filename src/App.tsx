@@ -114,12 +114,13 @@ function MainApp() {
   }
 
   const editorUser = {
+    id: user?.id ?? "",
     username: user?.username ?? "anonymous",
     color: user?.color ?? "#000000",
   };
 
   return (
-    <PhoenixSocketProvider>
+    <PhoenixSocketProvider key={user?.id}>
       <main className="mt-12 flex h-screen border-t border-gray-200">
         <div className="w-[320px] p-4 hidden">
           <h1 className="text-2xl font-bold mb-4">Activity</h1>

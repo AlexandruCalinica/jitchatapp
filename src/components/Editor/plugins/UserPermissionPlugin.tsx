@@ -14,25 +14,26 @@ import {
 import { $isListItemNode, $isListNode } from "@lexical/list";
 import { $isQuoteNode } from "@lexical/rich-text";
 import { userState } from "./nodeStates";
+import { User, isSameUser } from "../shared/types";
 
-export const checkNode = (node: LexicalNode, currentUser: string) => {
+export const checkNode = (node: LexicalNode, currentUser: User) => {
   const nodeUser = $getState(node, userState);
 
   if (!nodeUser) return false;
 
-  if (nodeUser.username !== currentUser) {
+  if (!isSameUser(nodeUser, currentUser)) {
     return true;
   }
 
   return false;
 };
 
-const isInOthersContainer = (node: LexicalNode, currentUser: string): boolean => {
+const isInOthersContainer = (node: LexicalNode, currentUser: User): boolean => {
   let current: LexicalNode | null = node;
   while (current) {
     if ($isParagraphNode(current) || $isListItemNode(current) || $isListNode(current) || $isQuoteNode(current)) {
       const containerUser = $getState(current, userState);
-      if (containerUser && containerUser.username !== currentUser) {
+      if (containerUser && !isSameUser(containerUser, currentUser)) {
         return true;
       }
     }
@@ -42,7 +43,7 @@ const isInOthersContainer = (node: LexicalNode, currentUser: string): boolean =>
 };
 
 type UserPermissionPluginProps = {
-  currentUser?: string;
+  currentUser?: User;
 };
 
 export function UserPermissionPlugin({

@@ -18,7 +18,7 @@ import {
   $createExtendedParagraphNode,
   ExtendedParagraphNode,
 } from "../nodes/ExtendedParagraphNode";
-import { User } from "../shared/types";
+import { User, isSameUser } from "../shared/types";
 import { configState } from "../shared/state";
 
 type EmptyParagraphPreventionPluginProps = {
@@ -89,7 +89,7 @@ export function EmptyParagraphPreventionPlugin({
 
         if (listItemNode && listNode && $isListNode(listNode)) {
           const listUserState = $getState(listNode, userState);
-          if (listUserState?.username !== currentUser.username) {
+          if (!isSameUser(listUserState, currentUser)) {
             return true;
           }
         }
@@ -115,7 +115,7 @@ export function EmptyParagraphPreventionPlugin({
         if (paragraphNode) {
           const paragraphNodeUserState = $getState(paragraphNode, userState);
 
-          if (paragraphNodeUserState?.username !== currentUser.username) {
+          if (!isSameUser(paragraphNodeUserState, currentUser)) {
             return true;
           }
         }
@@ -170,7 +170,7 @@ export function EmptyParagraphPreventionPlugin({
 
         if (listItemNode && listNode && $isListNode(listNode)) {
           const listUserState = $getState(listNode, userState);
-          if (listUserState?.username !== currentUser.username) {
+          if (!isSameUser(listUserState, currentUser)) {
             return true;
           }
         }
@@ -185,7 +185,7 @@ export function EmptyParagraphPreventionPlugin({
 
         const paragraphNodeUserState = $getState(paragraphNode, userState);
 
-        return paragraphNodeUserState?.username !== currentUser.username;
+        return !isSameUser(paragraphNodeUserState, currentUser);
       });
 
       if (shouldHandle) {

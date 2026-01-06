@@ -27,6 +27,7 @@ export function PluginTestExample() {
           namespace="plugin-test-example"
           placeholder="Type something to test both plugins..."
           user={{
+            id: "test-user-1",
             username: "test-user",
             color: "#3b82f6",
           }}

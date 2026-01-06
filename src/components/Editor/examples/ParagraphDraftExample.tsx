@@ -27,6 +27,7 @@ export function ParagraphDraftExample() {
           namespace="paragraph-draft-example"
           placeholder="Type something to test paragraph draft behavior..."
           user={{
+            id: "example-user-1",
             username: "current-user",
             color: "#3b82f6",
           }}
