@@ -7,10 +7,10 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 import LeftTwo from "~icons/icon-park-outline/left-two";
 import RightTwo from "~icons/icon-park-outline/right-two";
-import { Button } from "./components/Button";
 import { useState, useEffect } from "react";
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { LoginScreen } from "./components/LoginScreen";
+import { AccountSwitcher } from "./components/AccountSwitcher/AccountSwitcher";
 
 function createWebviewWindow() {
   const label = `n1-copy-${Math.random().toString(36).substring(2, 15)}`;
@@ -25,7 +25,7 @@ function createWebviewWindow() {
 }
 
 function MainApp() {
-  const { user, isLoading, isAuthenticated, login, logout } = useAuth();
+  const { user, isLoading, isAuthenticated, login } = useAuth();
   const [draftMode] = useState<"always" | "default">("default");
 
   const today = new Date();
@@ -154,12 +154,7 @@ function MainApp() {
               <LeftTwo />
               <p>Yesterday</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button size="xs" variant="outline" onClick={logout}>
-                Logout
-              </Button>
-              <p>{user?.username}</p>
-            </div>
+            <AccountSwitcher />
             <p>Today</p>
           </div>
           <div>

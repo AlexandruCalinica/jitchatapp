@@ -2,11 +2,16 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { onOpenUrl, getCurrent } from '@tauri-apps/plugin-deep-link';
 import {
   User,
+  Account,
   getToken,
+  getAccounts,
+  getActiveAccount,
+  setActiveAccountId,
   openLoginPage,
   exchangeCodeForToken,
   validateSession,
   logout as authLogout,
+  logoutAll as authLogoutAll,
   getAuthState,
   clearAuthState
 } from '../services/auth';
@@ -14,10 +19,13 @@ import {
 interface AuthContextValue {
   user: User | null;
   token: string | null;
+  accounts: Account[];
   isLoading: boolean;
   isAuthenticated: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
+  switchAccount: (accountId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -25,7 +33,26 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const refreshAccounts = useCallback(async () => {
+    const allAccounts = await getAccounts();
+    setAccounts(allAccounts);
+    return allAccounts;
+  }, []);
+
+  const refreshActiveAccount = useCallback(async () => {
+    const active = await getActiveAccount();
+    if (active) {
+      setToken(active.token);
+      setUser(active.user);
+    } else {
+      setToken(null);
+      setUser(null);
+    }
+    return active;
+  }, []);
 
   const handleAuthUrl = useCallback(async (urlString: string) => {
     const url = new URL(urlString);
@@ -46,12 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const { token: newToken, user: newUser } = await exchangeCodeForToken(code);
           setToken(newToken);
           setUser(newUser);
+          await refreshAccounts();
         } catch (error) {
           console.error('Failed to exchange code:', error);
         }
       }
     }
-  }, []);
+  }, [refreshAccounts]);
 
   useEffect(() => {
     getCurrent().then((urls) => {
@@ -77,12 +105,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function init() {
       setIsLoading(true);
       try {
+        await refreshAccounts();
         const storedToken = await getToken();
         
         if (storedToken) {
           setToken(storedToken);
           const validatedUser = await validateSession();
           setUser(validatedUser);
+          await refreshAccounts();
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);
@@ -92,25 +122,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     init();
-  }, []);
+  }, [refreshAccounts]);
 
   const login = useCallback(async () => {
-    await openLoginPage();
-  }, []);
+    const hasExistingAccounts = accounts.length > 0;
+    await openLoginPage(hasExistingAccounts);
+  }, [accounts.length]);
 
   const logout = useCallback(async () => {
     await authLogout();
+    await refreshAccounts();
+    await refreshActiveAccount();
+  }, [refreshAccounts, refreshActiveAccount]);
+
+  const logoutAll = useCallback(async () => {
+    await authLogoutAll();
+    setAccounts([]);
     setUser(null);
     setToken(null);
   }, []);
 
+  const switchAccount = useCallback(async (accountId: string) => {
+    await setActiveAccountId(accountId);
+    await refreshActiveAccount();
+  }, [refreshActiveAccount]);
+
   const value: AuthContextValue = {
     user,
     token,
+    accounts,
     isLoading,
     isAuthenticated: !!user && !!token,
     login,
-    logout
+    logout,
+    logoutAll,
+    switchAccount
   };
 
   return (
