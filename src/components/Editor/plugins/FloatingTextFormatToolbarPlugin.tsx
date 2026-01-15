@@ -206,7 +206,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
   return (
     <div
       ref={menuRef}
-      className="flex items-center justify-between bg-gray-700 text-gray-25 border-[1px] border-gray-200 rounded-md p-1 gap-1"
+      className="flex items-center justify-between bg-zed-panel text-zed-fg border-[1px] border-zed-border rounded-md p-1 gap-1"
     >
       <>
         <Tooltip label="Bold: ⌘ + B">
@@ -214,7 +214,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
             <FloatingToolbarButton
               active={isBold}
               aria-label="Format text to bold"
-              icon={<BoldIcon className="text-gray-100" />}
+              icon={<BoldIcon className="text-zed-fg" />}
               onClick={() => {
                 editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
               }}
@@ -226,7 +226,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
             <FloatingToolbarButton
               active={isItalic}
               aria-label="Format text with italic"
-              icon={<ItalicIcon className="text-gray-100" />}
+              icon={<ItalicIcon className="text-zed-fg" />}
               onClick={() => {
                 editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
               }}
@@ -238,7 +238,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
             <FloatingToolbarButton
               active={isStrikethrough}
               aria-label="Format text with a strikethrough"
-              icon={<StrikethroughIcon className="text-gray-100" />}
+              icon={<StrikethroughIcon className="text-zed-fg" />}
               onClick={() => {
                 editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
               }}
@@ -250,7 +250,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
             active={isUnorderedList}
             onClick={toggleUnorderedList}
             aria-label="Format text as an bullet list"
-            icon={<ListBulletedIcon className="text-gray-100" />}
+            icon={<ListBulletedIcon className="text-zed-fg" />}
           />
         </div>
         <div>
@@ -258,7 +258,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
             active={isOrderedList}
             onClick={toggleOrderedList}
             aria-label="Format text as an ordered list"
-            icon={<ListNumberedIcon className="text-gray-100" />}
+            icon={<ListNumberedIcon className="text-zed-fg" />}
           />
         </div>
         <div>
@@ -275,7 +275,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
               active={isLink}
               onClick={toggleLink}
               aria-label="Insert or remove link"
-              icon={<LinkIcon className="text-gray-100" />}
+              icon={<LinkIcon className="text-zed-fg" />}
             />
           </div>
         </Tooltip>
@@ -284,7 +284,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
             active={isBlockquote}
             onClick={toggleBlockquote}
             aria-label="Format text with block quote"
-            icon={<BlockQuoteIcon className="text-gray-100" />}
+            icon={<BlockQuoteIcon className="text-zed-fg" />}
           />
         </div>
         <div>
@@ -294,7 +294,7 @@ export function FloatingMenu({ editor }: FloatingMenuComponentProps) {
               editor.dispatchCommand(TOGGLE_DRAFT_COMMAND, undefined);
             }}
             aria-label="Toggle draft mode"
-            icon={<DraftIcon className="text-gray-100" />}
+            icon={<DraftIcon className="text-zed-fg" />}
           />
         </div>
       </>

@@ -13,15 +13,15 @@ export function AccountSwitcher() {
 
   return (
     <Menu.Root>
-      <Menu.Trigger className="flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 transition-colors">
+      <Menu.Trigger className="flex items-center gap-1 px-2 py-1 rounded hover:bg-zed-active transition-colors">
         <AccountAvatar user={user} size="sm" />
         <span className="text-sm font-medium max-w-[120px] truncate">{user.username}</span>
         <Menu.Indicator>
-          <DownIcon className="w-4 h-4 text-gray-500" />
+          <DownIcon className="w-4 h-4 text-zed-muted" />
         </Menu.Indicator>
       </Menu.Trigger>
       <Menu.Positioner>
-        <Menu.Content className="bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[220px] z-50">
+        <Menu.Content className="bg-zed-bg rounded-lg shadow-lg border border-zed-border py-1 min-w-[220px] z-50">
           <Menu.RadioItemGroup
             value={user.id}
             onValueChange={(e) => switchAccount(e.value)}
@@ -30,17 +30,17 @@ export function AccountSwitcher() {
               <Menu.RadioItem
                 key={account.id}
                 value={account.id}
-                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer outline-none data-[highlighted]:bg-gray-50"
+                className="flex items-center gap-2 px-3 py-2 hover:bg-zed-active cursor-pointer outline-none data-[highlighted]:bg-zed-active"
               >
                 <Menu.ItemIndicator className="w-4 flex-shrink-0">
-                  <CheckIcon className="w-4 h-4 text-blue-600" />
+                  <CheckIcon className="w-4 h-4 text-zed-blue" />
                 </Menu.ItemIndicator>
                 <AccountAvatar user={account.user} size="sm" />
                 <div className="flex-1 min-w-0">
                   <Menu.ItemText className="text-sm font-medium truncate block">
                     {account.user.username}
                   </Menu.ItemText>
-                  <span className="text-xs text-gray-500 truncate block">
+                  <span className="text-xs text-zed-muted truncate block">
                     {account.user.email}
                   </span>
                 </div>
@@ -48,18 +48,18 @@ export function AccountSwitcher() {
             ))}
           </Menu.RadioItemGroup>
 
-          <Menu.Separator className="my-1 border-t border-gray-200" />
+          <Menu.Separator className="my-1 border-t border-zed-border" />
 
           <Menu.Item
             value="add"
             onSelect={login}
-            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer outline-none data-[highlighted]:bg-gray-50"
+            className="flex items-center gap-2 px-3 py-2 hover:bg-zed-active cursor-pointer outline-none data-[highlighted]:bg-zed-active"
           >
-            <PlusIcon className="w-4 h-4 text-gray-600" />
+            <PlusIcon className="w-4 h-4 text-zed-muted" />
             <span className="text-sm">Add another account</span>
           </Menu.Item>
 
-          <Menu.Separator className="my-1 border-t border-gray-200" />
+          <Menu.Separator className="my-1 border-t border-zed-border" />
 
           <Menu.Item
             value="logout"

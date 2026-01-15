@@ -63,15 +63,20 @@ import { NodeTransformPlugin } from "./plugins/NodeTransformPlugin";
 import { syncCursorPositions } from "./plugins/Collaboration/SyncCursors";
 import { User } from "./shared/types";
 import { useConfigState } from "./shared/state";
+import { FollowChannelProvider } from "./contexts/FollowChannelContext";
+import { PingToFollowPlugin } from "./plugins/PingToFollowPlugin";
+import { FollowNotificationPlugin } from "./plugins/FollowNotificationPlugin";
+import { FollowModePlugin } from "./plugins/FollowModePlugin";
+import { ScrollBroadcastPlugin } from "./plugins/ScrollBroadcastPlugin";
 
 const theme: EditorThemeClasses = {
-  paragraph: "border-b border-gray-200 pl-2 data-[own=true]:bg-slate-100",
+  paragraph: "border-b border-zed-border pl-2 data-[own=true]:bg-zed-active",
   heading: {
-    h1: "text-lg font-bold mb-4 pl-2 border-b border-gray-100",
-    h2: "text-md font-bold mb-4 pl-2 border-b border-gray-100",
-    h3: "text-sm font-bold mb-4 pl-2 border-b border-gray-100",
-    h4: "text-sm font-bold mb-4 pl-2 border-b border-gray-100",
-    h5: "text-sm font-bold mb-4 pl-2 border-b border-gray-100",
+    h1: "text-lg font-bold mb-4 pl-2 border-b border-zed-border",
+    h2: "text-md font-bold mb-4 pl-2 border-b border-zed-border",
+    h3: "text-sm font-bold mb-4 pl-2 border-b border-zed-border",
+    h4: "text-sm font-bold mb-4 pl-2 border-b border-zed-border",
+    h5: "text-sm font-bold mb-4 pl-2 border-b border-zed-border",
   },
   list: {
     ulDepth: [
@@ -85,8 +90,8 @@ const theme: EditorThemeClasses = {
     nested: {
       listitem: "editor__nestedListItem list-none",
     },
-    ol: "p-0 m-0 list-outside list-decimal mb-2 pl-2 border-b border-gray-100",
-    ul: "p-0 m-0 list-outside mb-2 pl-2 border-b border-gray-100",
+    ol: "p-0 m-0 list-outside list-decimal mb-2 pl-2 border-b border-zed-border",
+    ul: "p-0 m-0 list-outside mb-2 pl-2 border-b border-zed-border",
     listitem: "ml-8",
     olDepth: [
       "p-0 m-0 list-outside",
@@ -98,7 +103,7 @@ const theme: EditorThemeClasses = {
     listitemChecked: "editor__listItemChecked",
     listitemUnchecked: "editor__listItemUnchecked",
   },
-  link: "text-blue-600 hover:text-blue-500",
+  link: "text-zed-blue hover:text-zed-blue/80",
   text: {
     bold: "editor-textBold",
     code: "editor-textCode",
@@ -110,7 +115,7 @@ const theme: EditorThemeClasses = {
     underlineStrikethrough: "editor-textUnderlineStrikethrough",
   },
   quote:
-    "border-l-[2px] border-gray-300 ml-2 pl-2 my-3 border-b border-b-gray-100",
+    "border-l-[2px] border-zed-muted ml-2 pl-2 my-3 border-b border-zed-border",
 };
 
 const onError = (error: Error) => {
@@ -365,11 +370,12 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
     }
 
     return (
-      <div
-        ref={containerRef}
-        className="relative w-full h-fit lexical-editor cursor-text animate-fadeIn"
-      >
-        <LexicalComposer initialConfig={initialConfig}>
+      <FollowChannelProvider documentId={documentId ?? null}>
+        <div
+          ref={containerRef}
+          className="relative w-full h-fit lexical-editor cursor-text animate-fadeIn"
+        >
+          <LexicalComposer initialConfig={initialConfig}>
           <EditorRefPlugin editorRef={editor} />
           <CheckListPlugin />
           <AutoLinkPlugin />
@@ -425,6 +431,11 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           <CommitPlugin currentUser={user} />
           <NodeTransformPlugin currentUser={user} />
 
+          {useYjs && <PingToFollowPlugin />}
+          {useYjs && <FollowNotificationPlugin />}
+          {useYjs && <FollowModePlugin containerRef={containerRef} />}
+          {useYjs && <ScrollBroadcastPlugin containerRef={containerRef} />}
+
           {floatingAnchorElem && !usePlainText && (
             <>
               <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
@@ -444,7 +455,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
                     size,
                     className: placeholderClassName,
                   }),
-                  "absolute top-1 text-gray-400 pl-[32px] animate-fadeIn"
+                  "absolute top-1 text-zed-muted pl-[32px] animate-fadeIn"
                 )}
               >
                 {placeholder}
@@ -503,7 +514,8 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
             {children}
           </div>
         </LexicalComposer>
-      </div>
+        </div>
+      </FollowChannelProvider>
     );
   }
 );

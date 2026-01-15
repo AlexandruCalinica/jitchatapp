@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+html, body, #root {
+  background-color: var(--color-zed-bg);
+  color: var(--color-zed-fg);
+  height: 100%;
+  margin: 0;
+}
+
 @theme {
   --color-gray-25: #fcfcfd;
   --color-gray-50: #f8fafc;
@@ -14,7 +21,25 @@
   --color-gray-800: #202939;
   --color-gray-900: #121926;
   --color-gray-950: #0d121c;
-  
+
+  /* --- Zed Core Palette --- */
+  --color-zed-bg: light-dark(#fafafa, #282c34);
+  --color-zed-sidebar: light-dark(#f2f2f2, #21252b);
+  --color-zed-panel: light-dark(#e5e5e6, #181a1f);
+  --color-zed-active: light-dark(#e8e8e8, #2c313a);
+
+  /* --- Typography & Borders --- */
+  --color-zed-fg: light-dark(#383a42, #dcdfe4);
+  --color-zed-muted: light-dark(#696c77, #abb2bf);
+  --color-zed-border: light-dark(#d0d0d0, #696c77);
+
+  /* --- Zed Syntax Accents --- */
+  --color-zed-blue: light-dark(#4078f2, #61afef);
+  --color-zed-red: light-dark(#e45649, #e06c75);
+  --color-zed-green: light-dark(#50a14f, #98c379);
+  --color-zed-purple: light-dark(#a626a4, #c678dd);
+  --color-zed-yellow: light-dark(#986801, #e5c07b);
+
   --animate-pulseOpacity: pulseOpacity 1s ease-in-out infinite;
   @keyframes pulseOpacity {
     from {
@@ -236,14 +261,14 @@
   --animate-commitFlash: commitFlash 300ms ease-out;
   @keyframes commitFlash {
     0% {
-      border-left-color: #3b82f6;
+      border-left-color: var(--color-zed-blue);
     }
     40% {
-      border-left-color: #60a5fa;
-      box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+      border-left-color: var(--color-zed-blue);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--color-zed-blue) 40%, transparent);
     }
     100% {
-      border-left-color: #3b82f6;
+      border-left-color: var(--color-zed-blue);
       box-shadow: none;
     }
   }
@@ -266,8 +291,7 @@ p[data-user] {
   padding-left: 36px;
   padding-top: 4px;
   padding-bottom: 4px;
-  border-left: 3px solid var(--color-gray-300);
-  margin-left: 4px;
+  border-left: 3px solid var(--color-zed-border);
   transition: border-color 0.2s ease, background-color 0.2s ease;
 
   &::after {
@@ -278,7 +302,7 @@ p[data-user] {
     right: 4px;
     font-size: 10px;
     font-weight: 400;
-    color: var(--color-gray-500);
+    color: var(--color-zed-muted);
   }
 
   &::before {
@@ -298,24 +322,24 @@ p[data-user] {
 }
 
 p[data-user][data-draft="true"] {
-  border-left: 3px dashed var(--color-gray-400);
-  background-color: var(--color-gray-50);
+  border-left: 3px dashed var(--color-zed-muted);
+  background-color: var(--color-zed-sidebar);
 
   &::after {
     content: "@" attr(data-user) " · drafting...";
-    color: var(--color-gray-400);
+    color: var(--color-zed-muted);
     font-style: italic;
   }
 }
 
 p[data-user][data-timestamp] {
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--color-zed-blue);
   background-color: transparent;
   animation: commitFlash 300ms ease-out;
 
   &::after {
     content: "@" attr(data-user) " · " attr(data-time);
-    color: var(--color-gray-500);
+    color: var(--color-zed-muted);
     font-style: normal;
     animation: timestampFadeIn 250ms ease-out;
   }
@@ -336,12 +360,12 @@ blockquote[data-user] {
   padding-left: 36px;
   padding-top: 4px;
   padding-bottom: 4px;
-  border-left: 3px solid var(--color-gray-300);
+  border-left: 3px solid var(--color-zed-border);
   margin-left: 4px;
   margin-top: 0;
   margin-bottom: 0;
   font-style: italic;
-  color: var(--color-gray-600);
+  color: var(--color-zed-muted);
   transition: border-color 0.2s ease, background-color 0.2s ease;
 
   &::after {
@@ -352,7 +376,7 @@ blockquote[data-user] {
     right: 4px;
     font-size: 10px;
     font-weight: 400;
-    color: var(--color-gray-500);
+    color: var(--color-zed-muted);
     font-style: normal;
   }
 
@@ -373,24 +397,24 @@ blockquote[data-user] {
 }
 
 blockquote[data-user][data-draft="true"] {
-  border-left: 3px dashed var(--color-gray-400);
-  background-color: var(--color-gray-50);
+  border-left: 3px dashed var(--color-zed-muted);
+  background-color: var(--color-zed-sidebar);
 
   &::after {
     content: "@" attr(data-user) " · drafting...";
-    color: var(--color-gray-400);
+    color: var(--color-zed-muted);
     font-style: normal;
   }
 }
 
 blockquote[data-user][data-timestamp] {
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--color-zed-blue);
   background-color: transparent;
   animation: commitFlash 300ms ease-out;
 
   &::after {
     content: "@" attr(data-user) " · " attr(data-time);
-    color: var(--color-gray-500);
+    color: var(--color-zed-muted);
     font-style: normal;
     animation: timestampFadeIn 250ms ease-out;
   }
@@ -412,7 +436,7 @@ ol[data-user] {
   padding-left: 36px;
   padding-top: 4px;
   padding-bottom: 4px;
-  border-left: 3px solid var(--color-gray-300);
+  border-left: 3px solid var(--color-zed-border);
   margin-left: 4px;
   margin-bottom: 0;
   transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -425,7 +449,7 @@ ol[data-user] {
     right: 4px;
     font-size: 10px;
     font-weight: 400;
-    color: var(--color-gray-500);
+    color: var(--color-zed-muted);
   }
 
   &::before {
@@ -446,25 +470,25 @@ ol[data-user] {
 
 ul[data-user][data-draft="true"],
 ol[data-user][data-draft="true"] {
-  border-left: 3px dashed var(--color-gray-400);
-  background-color: var(--color-gray-50);
+  border-left: 3px dashed var(--color-zed-muted);
+  background-color: var(--color-zed-sidebar);
 
   &::after {
     content: "@" attr(data-user) " · drafting...";
-    color: var(--color-gray-400);
+    color: var(--color-zed-muted);
     font-style: italic;
   }
 }
 
 ul[data-user][data-timestamp],
 ol[data-user][data-timestamp] {
-  border-left: 3px solid #3b82f6;
+  border-left: 3px solid var(--color-zed-blue);
   background-color: transparent;
   animation: commitFlash 300ms ease-out;
 
   &::after {
     content: "@" attr(data-user) " · " attr(data-time);
-    color: var(--color-gray-500);
+    color: var(--color-zed-muted);
     font-style: normal;
     animation: timestampFadeIn 250ms ease-out;
   }

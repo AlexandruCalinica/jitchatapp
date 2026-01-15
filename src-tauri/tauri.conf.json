@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "n1",
+  "productName": "jitchat",
   "version": "0.1.0",
-  "identifier": "com.n1.app",
+  "identifier": "com.jitchat.app",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -10,15 +10,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [
-      {
-        "label": "n1",
-        "title": "n1",
-        "width": 800,
-        "height": 600,
-        "dragDropEnabled": false
-      }
-    ],
+    "windows": [],
     "security": {
       "csp": null
     }

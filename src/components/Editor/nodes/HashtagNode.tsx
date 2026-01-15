@@ -86,7 +86,7 @@ export class HashtagNode extends TextNode {
     const dom = super.createDOM(config);
 
     dom.className =
-      "hashtag text-primary-600 cursor-pointer hover:underline bg-slate-100 px-1 rounded-md";
+      "hashtag text-zed-purple cursor-pointer hover:underline bg-zed-active px-1 rounded-md";
     dom.setAttribute("data-hashtag-id", this.__hashtag.value);
 
     return dom;

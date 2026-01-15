@@ -165,7 +165,7 @@ export function FloatingLinkEditor({
     <div
       ref={editorRef}
       id="container-link-input"
-      className="bg-gray-700 flex items-center min-w-[240px] max-w-[240px] p-1 pl-3 shadow-lg rounded-md"
+      className="bg-zed-panel flex items-center min-w-[240px] max-w-[240px] p-1 pl-3 shadow-lg rounded-md"
     >
       <Input
         size="sm"
@@ -175,7 +175,7 @@ export function FloatingLinkEditor({
         placeholder="Enter a URL"
         onMouseDown={(event) => event.stopPropagation()}
         onChange={(event) => setLinkUrl(event.target.value)}
-        className="leading-none min-h-0 pointer-events-auto text-gray-25 overflow-ellipsis"
+        className="leading-none min-h-0 pointer-events-auto text-zed-fg overflow-ellipsis"
         onKeyDown={(event) => {
           monitorInputInteraction(event);
           event.stopPropagation();
@@ -187,14 +187,14 @@ export function FloatingLinkEditor({
         }}
       />
 
-      <div className="w-[1px] h-3 border-b-0 border-l-[1px] border-gray-500 mx-2" />
+      <div className="w-[1px] h-3 border-b-0 border-l-[1px] border-zed-muted mx-2" />
 
       {linkUrl.trim() &&
         linkUrl !== "https://" &&
         linkUrl !== "Enter a URL" && (
           <FloatingToolbarButton
             aria-label="Open link"
-            icon={<LinkIcon className="text-gray-100" />}
+            icon={<LinkIcon className="text-zed-fg" />}
             onMouseDown={(event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -209,7 +209,7 @@ export function FloatingLinkEditor({
       <FloatingToolbarButton
         aria-label="Delete link"
         onClick={handleDeleteLink}
-        icon={<TrashIcon className="text-gray-100" />}
+        icon={<TrashIcon className="text-zed-fg" />}
         onMouseDown={(event) => {
           event.preventDefault();
           event.stopPropagation();

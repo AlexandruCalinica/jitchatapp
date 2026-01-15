@@ -21,9 +21,9 @@ export const FloatingToolbarButton = ({
       onClick={onClick}
       style={{ pointerEvents: "all" }}
       className={clsx(
-        "rounded-sm text-gray-100 hover:bg-gray-600 focus:bg-gray-600 focus:text-gray-100 hover:text-gray-100",
+        "rounded-sm text-zed-fg hover:bg-zed-active focus:bg-zed-active focus:text-zed-fg hover:text-zed-fg",
         {
-          "bg-gray-600 text-gray-100": active,
+          "bg-zed-active text-zed-fg": active,
         }
       )}
     />

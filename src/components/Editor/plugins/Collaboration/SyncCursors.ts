@@ -187,7 +187,8 @@ function createCursorSelection(
   anchorKey: NodeKey,
   anchorOffset: number,
   focusKey: NodeKey,
-  focusOffset: number
+  focusOffset: number,
+  hasFollowers: boolean = false
 ): CursorSelection {
   const color = cursor.color;
   const caret = document.createElement("span");
@@ -199,6 +200,13 @@ function createCursorSelection(
   name.style.cssText = `background-color:${color};`;
   name.className =
     "absolute left-[-0px] top-[-16px] text-white text-xs rounded-sm rounded-bl-none leading-none p-0.5 font-bold whitespace-nowrap animate-slideUpFade";
+
+  if (hasFollowers) {
+    const followerBadge = document.createElement("span");
+    followerBadge.textContent = " 👁";
+    followerBadge.className = "ml-0.5 opacity-90";
+    name.appendChild(followerBadge);
+  }
 
   caret.appendChild(name);
   return {
@@ -224,6 +232,14 @@ export const syncCursorPositions = (binding: Binding, provider: Provider) => {
   const editor = binding.editor;
   const nodeMap = editor._editorState._nodeMap;
 
+  const followersMap = new Map<number, boolean>();
+  for (const [, state] of awarnessStates) {
+    const followingClientId = (state as { following?: number }).following;
+    if (followingClientId !== undefined && followingClientId !== null) {
+      followersMap.set(followingClientId, true);
+    }
+  }
+
   const visitedClientIds = new Set();
 
   for (let i = 0; i < awarnessStates.length; i++) {
@@ -237,6 +253,7 @@ export const syncCursorPositions = (binding: Binding, provider: Provider) => {
     let selection = null;
     const { name, color, focusing } = awarness;
     const cursor = cursors.get(clientId) ?? createCursor(name, color);
+    const hasFollowers = followersMap.has(clientId);
 
     cursors.set(clientId, cursor);
 
@@ -270,13 +287,20 @@ export const syncCursorPositions = (binding: Binding, provider: Provider) => {
 
         selection = cursor.selection;
 
-        if (selection === null) {
+        const prevHasFollowers = selection?.name?.textContent?.includes("👁") ?? false;
+        const needsRebuild = hasFollowers !== prevHasFollowers;
+
+        if (selection === null || needsRebuild) {
+          if (selection !== null) {
+            destroySelection(binding, selection);
+          }
           selection = createCursorSelection(
             cursor,
             anchorKey,
             anchorOffset,
             focusKey,
-            focusOffset
+            focusOffset,
+            hasFollowers
           );
         } else {
           const anchor = selection.anchor;

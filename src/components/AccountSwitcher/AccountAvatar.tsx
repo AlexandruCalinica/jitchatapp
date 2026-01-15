@@ -15,7 +15,7 @@ export function AccountAvatar({ user, size = 'md' }: AccountAvatarProps) {
       className={`relative inline-flex items-center justify-center rounded-full ring-2 ${sizeClasses}`}
       style={{ '--tw-ring-color': user.color } as React.CSSProperties}
     >
-      <Avatar.Fallback className="flex items-center justify-center w-full h-full rounded-full bg-gray-200 font-medium text-gray-700">
+      <Avatar.Fallback className="flex items-center justify-center w-full h-full rounded-full bg-zed-active font-medium text-zed-fg">
         {initials}
       </Avatar.Fallback>
       <Avatar.Image

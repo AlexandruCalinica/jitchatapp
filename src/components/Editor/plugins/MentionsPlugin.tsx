@@ -145,9 +145,9 @@ function MentionsTypeaheadMenuItem({
       onMouseEnter={onMouseEnter}
       id={"typeahead-item-" + index}
       className={clsx(
-        "flex gap-2 items-center text-start py-[6px] px-[10px] leading-[18px] text-gray-700  rounded-sm outline-none cursor-pointer hover:bg-gray-50 hover:rounded-md ",
+        "flex gap-2 items-center text-start py-[6px] px-[10px] leading-[18px] text-zed-fg  rounded-sm outline-none cursor-pointer hover:bg-zed-active hover:rounded-md ",
         "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed hover:data-[disabled]:bg-transparent",
-        isSelected && "bg-gray-50 text-gray-700"
+        isSelected && "bg-zed-active text-zed-fg"
       )}
     >
       {option.picture}
@@ -222,7 +222,7 @@ export default function NewMentionsPlugin({
       ) =>
         anchorElementRef.current && _options.length
           ? ReactDOM.createPortal(
-              <div className="relative bg-white min-w-[250px] py-1.5 px-[6px] shadow-lg border rounded-md z-50">
+              <div className="relative bg-zed-bg min-w-[250px] py-1.5 px-[6px] shadow-lg border border-zed-border rounded-md z-50">
                 <ul>
                   {_options.map((option, i: number) => (
                     <MentionsTypeaheadMenuItem
