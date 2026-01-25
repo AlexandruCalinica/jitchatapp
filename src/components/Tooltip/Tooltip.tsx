@@ -1,11 +1,10 @@
 import React from 'react';
 
 import { twMerge } from 'tailwind-merge';
-import * as RadixTooltip from '@radix-ui/react-tooltip';
+import { Tooltip as ArkTooltip } from '@ark-ui/react/tooltip';
 
 export interface TooltipProps {
   open?: boolean;
-  asChild?: boolean;
   tabIndex?: number;
   className?: string;
   hasArrow?: boolean;
@@ -19,13 +18,12 @@ export interface TooltipProps {
 }
 
 export const Tooltip = ({
-  side,
+  side = 'top',
   open,
   label,
-  align,
+  align = 'center',
   children,
   hasArrow,
-  tabIndex,
   className,
   defaultOpen,
   onOpenChange,
@@ -33,32 +31,42 @@ export const Tooltip = ({
 }: TooltipProps) => {
   if (!label) return children;
 
+  const getPlacement = () => {
+    if (align === 'center') return side;
+    return `${side}-${align}` as const;
+  };
+
   return (
-    <RadixTooltip.Provider>
-      <RadixTooltip.Root
-        open={open}
-        defaultOpen={defaultOpen}
-        onOpenChange={onOpenChange}
-        delayDuration={delayDuration}
-      >
-        <RadixTooltip.Trigger asChild tabIndex={tabIndex}>
-          {children}
-        </RadixTooltip.Trigger>
-        <RadixTooltip.Portal container={typeof window !== 'undefined' ? document?.body : null}>
-          <RadixTooltip.Content
-            side={side}
-            align={align}
-            sideOffset={5}
-            className={twMerge(
-              'z-[5000] data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-zed-bg select-none rounded-[4px] bg-zed-fg px-[8px] py-[4px] text-[12px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]',
-              className
-            )}
-          >
-            {label}
-            {hasArrow && <RadixTooltip.Arrow className="fill-zed-fg" />}
-          </RadixTooltip.Content>
-        </RadixTooltip.Portal>
-      </RadixTooltip.Root>
-    </RadixTooltip.Provider>
+    <ArkTooltip.Root
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={(details) => onOpenChange?.(details.open)}
+      openDelay={delayDuration}
+      positioning={{
+        placement: getPlacement(),
+        offset: { mainAxis: 5 },
+      }}
+      lazyMount
+      unmountOnExit
+    >
+      <ArkTooltip.Trigger asChild>
+        {children}
+      </ArkTooltip.Trigger>
+      <ArkTooltip.Positioner>
+        <ArkTooltip.Content
+          className={twMerge(
+            'z-[5000] text-zed-bg select-none rounded-[4px] bg-zed-fg px-[8px] py-[4px] text-[12px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px]',
+            className
+          )}
+        >
+          {label}
+          {hasArrow && (
+            <ArkTooltip.Arrow>
+              <ArkTooltip.ArrowTip className="fill-zed-fg" />
+            </ArkTooltip.Arrow>
+          )}
+        </ArkTooltip.Content>
+      </ArkTooltip.Positioner>
+    </ArkTooltip.Root>
   );
 };

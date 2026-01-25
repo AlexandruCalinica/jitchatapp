@@ -2,6 +2,7 @@ export type User = {
   id: string;
   username: string;
   color: string;
+  avatar_url?: string | null;
 };
 
 export const isSameUser = (nodeUser: User | undefined | null, currentUser: User | undefined | null): boolean => {

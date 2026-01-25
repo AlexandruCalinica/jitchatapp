@@ -6,6 +6,8 @@ type PresenceContextType = {
     user_id: string;
     username: string;
     color: string;
+    avatar_url: string | null;
+    current_doc_id: string | null;
     online_at: number;
   }[];
 };

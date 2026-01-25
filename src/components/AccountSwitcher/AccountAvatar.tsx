@@ -1,14 +1,16 @@
 import { Avatar } from '@ark-ui/react/avatar';
 import { User } from '../../services/auth';
+import { getAvatarUrl } from '../../utils/avatar';
 
 interface AccountAvatarProps {
   user: User;
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
 }
 
 export function AccountAvatar({ user, size = 'md' }: AccountAvatarProps) {
-  const sizeClasses = size === 'sm' ? 'w-6 h-6 text-xs' : 'w-8 h-8 text-sm';
+  const sizeClasses = size === 'xs' ? 'w-4 h-4 text-xs' : size === 'sm' ? 'w-6 h-6 text-xs' : 'w-8 h-8 text-sm';
   const initials = user.username.slice(0, 2).toUpperCase();
+  const avatarUrl = getAvatarUrl(user, size === 'xs' ? 'small' : size === 'sm' ? 'small' : 'medium');
 
   return (
     <Avatar.Root
@@ -19,6 +21,7 @@ export function AccountAvatar({ user, size = 'md' }: AccountAvatarProps) {
         {initials}
       </Avatar.Fallback>
       <Avatar.Image
+        src={avatarUrl}
         className="w-full h-full rounded-full object-cover"
         alt={user.username}
       />

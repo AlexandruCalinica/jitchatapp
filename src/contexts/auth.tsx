@@ -26,6 +26,7 @@ interface AuthContextValue {
   logout: () => Promise<void>;
   logoutAll: () => Promise<void>;
   switchAccount: (accountId: string) => Promise<void>;
+  refreshUser: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -147,6 +148,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await refreshActiveAccount();
   }, [refreshActiveAccount]);
 
+  const refreshUser = useCallback(async () => {
+    const validatedUser = await validateSession();
+    setUser(validatedUser);
+    return validatedUser;
+  }, []);
+
   const value: AuthContextValue = {
     user,
     token,
@@ -156,7 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     logoutAll,
-    switchAccount
+    switchAccount,
+    refreshUser,
   };
 
   return (

@@ -1,8 +1,7 @@
 import { cloneElement } from 'react';
 
 import { twMerge } from 'tailwind-merge';
-import * as RadixAvatar from '@radix-ui/react-avatar';
-import { AvatarImageProps } from '@radix-ui/react-avatar';
+import { Avatar as ArkAvatar } from '@ark-ui/react/avatar';
 import { cva, VariantProps } from 'class-variance-authority';
 
 const avatarBadgeSize = cva([], {
@@ -149,12 +148,12 @@ const textSizeVariant = cva([], {
 interface AvatarProps
   extends VariantProps<typeof avatarStyle>,
     VariantProps<typeof avatarBadgeSize>,
-    VariantProps<typeof textSizeVariant>,
-    Omit<AvatarImageProps, 'name' | 'src'> {
+    VariantProps<typeof textSizeVariant> {
   src?: string | null;
   name?: string | null;
   icon?: React.ReactNode;
   badge?: React.ReactElement<{ className?: string }>;
+  className?: string;
 }
 
 export const Avatar = ({
@@ -162,13 +161,9 @@ export const Avatar = ({
   name,
   src,
   size,
-  textSize = 'md',
   variant,
-  badgeSize,
   className,
-  color,
   badge,
-  ...props
 }: AvatarProps) => {
   const emptyFallbackWords = name?.trim().split(' ') ?? ['N', 'A'];
 
@@ -176,24 +171,19 @@ export const Avatar = ({
   const emptyFallbackLetters = `${a[0] ?? ''}${b[0] ?? ''}`.trim().toLocaleUpperCase();
 
   return (
-    <RadixAvatar.Root
-      id="img-container"
-      className={twMerge(avatarStyle({ size, variant, className }))}
-    >
-      <RadixAvatar.Image
-        {...props}
-        src={src ?? undefined}
-        className={'h-full w-full relative rounded-[inherit] object-cover '}
-      />
-      <RadixAvatar.Fallback
-        {...props}
+    <ArkAvatar.Root className={twMerge(avatarStyle({ size, variant, className }))}>
+      <ArkAvatar.Fallback
         className={twMerge(
           'leading-1 flex h-full w-full items-center justify-center font-medium',
           textSizeVariant({ textSize: size })
         )}
       >
         {name ? emptyFallbackLetters : (icon ?? emptyFallbackLetters)}
-      </RadixAvatar.Fallback>
+      </ArkAvatar.Fallback>
+      <ArkAvatar.Image
+        src={src ?? undefined}
+        className="h-full w-full relative rounded-[inherit] object-cover"
+      />
       {badge &&
         cloneElement(badge, {
           className: twMerge(
@@ -205,7 +195,7 @@ export const Avatar = ({
             badge.props?.className
           ),
         })}
-    </RadixAvatar.Root>
+    </ArkAvatar.Root>
   );
 };
 

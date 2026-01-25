@@ -9,6 +9,8 @@ type Meta = {
   phx_ref: string;
   user_id: string;
   username: string;
+  avatar_url: string | null;
+  current_doc_id: string | null;
   online_at: number;
   metadata: { source: string };
 };

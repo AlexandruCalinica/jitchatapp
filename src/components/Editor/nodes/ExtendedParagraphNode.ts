@@ -1,8 +1,8 @@
 import { $create, $setState, ParagraphNode, $getState } from "lexical";
 
 import { User } from "../shared/types";
-
 import { userState, draftState, timestampState } from "../plugins/nodeStates";
+import { getAvatarUrl } from "../../../utils/avatar";
 
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -29,6 +29,8 @@ export class ExtendedParagraphNode extends ParagraphNode {
 
     if (user) {
       dom.setAttribute("data-user", user.username);
+      const avatarUrl = getAvatarUrl(user, "small");
+      dom.style.setProperty("--avatar-url", `url(${avatarUrl})`);
     }
     if (isDraft) {
       dom.setAttribute("data-draft", "true");
@@ -48,8 +50,11 @@ export class ExtendedParagraphNode extends ParagraphNode {
 
     if (user) {
       dom.setAttribute("data-user", user.username);
+      const avatarUrl = getAvatarUrl(user, "small");
+      dom.style.setProperty("--avatar-url", `url(${avatarUrl})`);
     } else {
       dom.removeAttribute("data-user");
+      dom.style.removeProperty("--avatar-url");
     }
 
     if (isDraft) {

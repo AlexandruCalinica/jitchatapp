@@ -70,13 +70,13 @@ import { FollowModePlugin } from "./plugins/FollowModePlugin";
 import { ScrollBroadcastPlugin } from "./plugins/ScrollBroadcastPlugin";
 
 const theme: EditorThemeClasses = {
-  paragraph: "border-b border-zed-border pl-2 data-[own=true]:bg-zed-active",
+  paragraph: "pl-4 pb-1 mb-1 data-[own=true]:bg-zed-active",
   heading: {
-    h1: "text-lg font-bold mb-4 pl-2 border-b border-zed-border",
-    h2: "text-md font-bold mb-4 pl-2 border-b border-zed-border",
-    h3: "text-sm font-bold mb-4 pl-2 border-b border-zed-border",
-    h4: "text-sm font-bold mb-4 pl-2 border-b border-zed-border",
-    h5: "text-sm font-bold mb-4 pl-2 border-b border-zed-border",
+    h1: "text-lg font-bold mb-4 pl-4",
+    h2: "text-md font-bold mb-4 pl-4",
+    h3: "text-sm font-bold mb-4 pl-4",
+    h4: "text-sm font-bold mb-4 pl-4",
+    h5: "text-sm font-bold mb-4 pl-4",
   },
   list: {
     ulDepth: [
@@ -90,8 +90,8 @@ const theme: EditorThemeClasses = {
     nested: {
       listitem: "editor__nestedListItem list-none",
     },
-    ol: "p-0 m-0 list-outside list-decimal mb-2 pl-2 border-b border-zed-border",
-    ul: "p-0 m-0 list-outside mb-2 pl-2 border-b border-zed-border",
+    ol: "p-0 m-0 list-outside list-decimal mb-2 pl-2",
+    ul: "p-0 m-0 list-outside mb-2 pl-2",
     listitem: "ml-8",
     olDepth: [
       "p-0 m-0 list-outside",
@@ -115,7 +115,7 @@ const theme: EditorThemeClasses = {
     underlineStrikethrough: "editor-textUnderlineStrikethrough",
   },
   quote:
-    "border-l-[2px] border-zed-muted ml-2 pl-2 my-3 border-b border-zed-border",
+    "border-l-[2px] border-zed-muted ml-2 pl-2 my-3",
 };
 
 const onError = (error: Error) => {

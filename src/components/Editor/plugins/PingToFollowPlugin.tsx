@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { createPortal } from "react-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { COMMAND_PRIORITY_HIGH, createCommand } from "lexical";
 
@@ -75,7 +74,7 @@ export function PingToFollowPlugin() {
     return null;
   }
 
-  return createPortal(
+  return (
     <PingMenu
       isOpen={isMenuOpen}
       onClose={closeMenu}
@@ -83,7 +82,6 @@ export function PingToFollowPlugin() {
       onSendPing={handleSendPing}
       position={menuPosition}
       currentDocId={followContext.currentDocId}
-    />,
-    document.body
+    />
   );
 }

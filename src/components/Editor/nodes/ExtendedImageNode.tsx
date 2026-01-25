@@ -16,6 +16,7 @@ import { Suspense, lazy } from "react";
 
 import { User } from "../shared/types";
 import { userState, draftState, timestampState } from "../plugins/nodeStates";
+import { getAvatarUrl } from "../../../utils/avatar";
 
 const ImageComponent = lazy(() => import("./ImageComponent"));
 
@@ -183,6 +184,8 @@ export class ExtendedImageNode extends DecoratorNode<JSX.Element> {
     if (user) {
       span.setAttribute("data-user", user.username);
       span.style.setProperty("--user-color", user.color);
+      const avatarUrl = getAvatarUrl(user, "small");
+      span.style.setProperty("--avatar-url", `url(${avatarUrl})`);
     }
     if (isDraft) {
       span.setAttribute("data-draft", "true");
@@ -203,9 +206,12 @@ export class ExtendedImageNode extends DecoratorNode<JSX.Element> {
     if (user) {
       dom.setAttribute("data-user", user.username);
       dom.style.setProperty("--user-color", user.color);
+      const avatarUrl = getAvatarUrl(user, "small");
+      dom.style.setProperty("--avatar-url", `url(${avatarUrl})`);
     } else {
       dom.removeAttribute("data-user");
       dom.style.removeProperty("--user-color");
+      dom.style.removeProperty("--avatar-url");
     }
 
     if (isDraft) {

@@ -2,6 +2,7 @@ import { TextNode, $create, $setState, $getState } from "lexical";
 
 import { User } from "../shared/types";
 import { userState, draftState, timestampState } from "../plugins/nodeStates";
+import { getAvatarUrl } from "../../../utils/avatar";
 
 export class ExtendedTextNode extends TextNode {
   $config() {
@@ -18,6 +19,8 @@ export class ExtendedTextNode extends TextNode {
 
     if (user) {
       dom.setAttribute("data-user", user.username);
+      const avatarUrl = getAvatarUrl(user, "small");
+      dom.style.setProperty("--avatar-url", `url(${avatarUrl})`);
     }
     if (isDraft) {
       dom.setAttribute("data-draft", "true");
@@ -36,8 +39,11 @@ export class ExtendedTextNode extends TextNode {
 
     if (user) {
       dom.setAttribute("data-user", user.username);
+      const avatarUrl = getAvatarUrl(user, "small");
+      dom.style.setProperty("--avatar-url", `url(${avatarUrl})`);
     } else {
       dom.removeAttribute("data-user");
+      dom.style.removeProperty("--avatar-url");
     }
 
     if (isDraft) {

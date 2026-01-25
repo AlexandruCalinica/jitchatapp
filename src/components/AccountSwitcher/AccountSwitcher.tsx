@@ -1,12 +1,15 @@
 import { Menu } from '@ark-ui/react/menu';
+import { useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../../contexts/auth';
 import { AccountAvatar } from './AccountAvatar';
 import DownIcon from '~icons/icon-park-outline/down';
 import CheckIcon from '~icons/icon-park-outline/check';
 import PlusIcon from '~icons/icon-park-outline/plus';
 import LogoutIcon from '~icons/icon-park-outline/logout';
+import SettingsIcon from '~icons/solar/settings-outline';
 
 export function AccountSwitcher() {
+  const navigate = useNavigate();
   const { user, accounts, login, logout, logoutAll, switchAccount } = useAuth();
 
   if (!user) return null;
@@ -14,7 +17,7 @@ export function AccountSwitcher() {
   return (
     <Menu.Root>
       <Menu.Trigger className="flex items-center gap-1 px-2 py-1 rounded hover:bg-zed-active transition-colors">
-        <AccountAvatar user={user} size="sm" />
+        <AccountAvatar user={user} size="xs" />
         <span className="text-sm font-medium max-w-[120px] truncate">{user.username}</span>
         <Menu.Indicator>
           <DownIcon className="w-4 h-4 text-zed-muted" />
@@ -49,6 +52,15 @@ export function AccountSwitcher() {
           </Menu.RadioItemGroup>
 
           <Menu.Separator className="my-1 border-t border-zed-border" />
+
+          <Menu.Item
+            value="settings"
+            onSelect={() => navigate({ to: '/settings' })}
+            className="flex items-center gap-2 px-3 py-2 hover:bg-zed-active cursor-pointer outline-none data-[highlighted]:bg-zed-active"
+          >
+            <SettingsIcon className="w-4 h-4 text-zed-muted" />
+            <span className="text-sm">Settings</span>
+          </Menu.Item>
 
           <Menu.Item
             value="add"

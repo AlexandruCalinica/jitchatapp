@@ -14,6 +14,23 @@ export function ScrollBroadcastPlugin({
   const followContext = useFollowChannelOptional();
   const lastBroadcastTime = useRef(0);
   const pendingBroadcast = useRef<number | null>(null);
+  const prevFollowerCount = useRef(0);
+
+  useEffect(() => {
+    const currentCount = followContext?.followers.size ?? 0;
+    const newFollowerJoined = currentCount > prevFollowerCount.current && currentCount > 0;
+
+    if (newFollowerJoined) {
+      const scrollContainer = containerRef?.current?.closest('[data-scroll-container]') as HTMLElement | null
+        ?? containerRef?.current?.parentElement as HTMLElement | null;
+
+      if (scrollContainer) {
+        followContext?.broadcastScroll(scrollContainer.scrollTop);
+      }
+    }
+
+    prevFollowerCount.current = currentCount;
+  }, [followContext?.followers.size, containerRef, followContext]);
 
   useEffect(() => {
     if (!followContext?.hasFollowers) {

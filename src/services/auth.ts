@@ -10,6 +10,7 @@ export interface User {
   email: string;
   username: string;
   color: string;
+  avatar_url: string | null;
 }
 
 export interface Account {
