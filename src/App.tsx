@@ -1,6 +1,7 @@
 import { RouterProvider } from "@tanstack/react-router";
 import { PhoenixSocketProvider } from "./contexts/phoenix-socket";
 import { AuthProvider, useAuth } from "./contexts/auth";
+import { ChannelsProvider } from "./contexts/channels";
 import { LoginScreen } from "./components/LoginScreen";
 import { router } from "./router";
 import { useEffect } from "react";
@@ -49,7 +50,9 @@ function MainApp() {
 
   return (
     <PhoenixSocketProvider key={user?.id}>
-      <RouterProvider router={router} />
+      <ChannelsProvider>
+        <RouterProvider router={router} />
+      </ChannelsProvider>
     </PhoenixSocketProvider>
   );
 }

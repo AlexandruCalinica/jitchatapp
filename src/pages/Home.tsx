@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/auth";
+import { useChannelsContext } from "../contexts/channels";
 import Editor from "../components/Editor/Editor";
 import { ChannelsLayout } from "../components/ChannelsLayout/Layout";
 
 export function Home() {
   const { user } = useAuth();
+  const { selectedDocumentId, loading } = useChannelsContext();
   const [draftMode] = useState<"always" | "default">("default");
 
   const editorUser = {
@@ -17,18 +19,29 @@ export function Home() {
   return (
     <ChannelsLayout>
       <div className="flex-1 overflow-y-auto h-full" data-scroll-container>
-        <Editor
-          user={editorUser}
-          documentId="doc_avarh0wicwaeg1dj"
-          namespace="main"
-          useYjs
-          draftMode={draftMode}
-          textBlur={{
-            unlockKey: "Alt",
-            blurAmount: "3px",
-            showIndicator: true,
-          }}
-        />
+        {loading ? (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            Loading...
+          </div>
+        ) : selectedDocumentId ? (
+          <Editor
+            key={selectedDocumentId}
+            user={editorUser}
+            documentId={selectedDocumentId}
+            namespace="main"
+            useYjs
+            draftMode={draftMode}
+            textBlur={{
+              unlockKey: "Alt",
+              blurAmount: "3px",
+              showIndicator: true,
+            }}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            Select a document to start editing
+          </div>
+        )}
       </div>
     </ChannelsLayout>
   );
