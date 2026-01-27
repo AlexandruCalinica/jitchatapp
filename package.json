@@ -21,6 +21,8 @@
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
     "@tailwindcss/vite": "^4.1.8",
+    "@tanstack/electric-db-collection": "^0.2.28",
+    "@tanstack/react-db": "^0.1.67",
     "@tanstack/react-router": "^1.157.13",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-deep-link": "^2.4.5",

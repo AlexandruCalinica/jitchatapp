@@ -1,55 +1,334 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { TreeView, createTreeCollection } from "@ark-ui/react/tree-view";
+import { Dialog } from "@ark-ui/react/dialog";
+import { Menu } from "@ark-ui/react/menu";
+import { Portal } from "@ark-ui/react/portal";
 import HashtagIcon from "~icons/solar/hashtag-outline";
 import CalendarIcon from "~icons/solar/calendar-date-outline";
 import ArrowRightIcon from "~icons/solar/alt-arrow-right-outline";
 import ArrowDownIcon from "~icons/solar/alt-arrow-down-outline";
 import AddIcon from "~icons/solar/add-square-outline";
 import LoadingIcon from "~icons/solar/refresh-circle-outline";
+import CloseIcon from "~icons/solar/close-circle-outline";
+import PenIcon from "~icons/solar/pen-outline";
+import TrashIcon from "~icons/solar/trash-bin-minimalistic-outline";
 import { useChannelsContext } from "../../contexts/channels";
-import { formatDocumentDate, Channel } from "../../services/channels";
+import { formatDocumentDate } from "../../services/channels";
+import { ChannelWithDocuments } from "../../hooks/useChannelsElectric";
 
 interface TreeNode {
   id: string;
   name: string;
   type: "channel" | "document";
+  channelId?: string;
   documentId?: string;
   children?: TreeNode[];
 }
 
-function buildTreeNodes(channels: Channel[]): TreeNode[] {
+function getDocumentDisplayName(doc: { name: string; inserted_at: string }): string {
+  if (doc.name) return doc.name;
+  if (!doc.inserted_at) return 'Untitled';
+  const formatted = formatDocumentDate(doc.inserted_at);
+  return formatted === 'Invalid Date' ? 'Untitled' : formatted;
+}
+
+function buildTreeNodes(channels: ChannelWithDocuments[]): TreeNode[] {
   return channels.map(channel => ({
     id: `channel-${channel.id}`,
     name: channel.name,
     type: "channel" as const,
+    channelId: channel.id,
     children: channel.documents.map(doc => ({
       id: `doc-${doc.id}`,
-      name: doc.title || formatDocumentDate(doc.created_at),
+      name: getDocumentDisplayName(doc),
       type: "document" as const,
       documentId: doc.id,
     })),
   }));
 }
 
-const TreeViewActions = () => {
-  const { addChannel } = useChannelsContext();
-  
-  const handleAddChannel = async () => {
-    const name = prompt("Enter channel name:");
-    if (name?.trim()) {
-      await addChannel(name.trim());
+const RenameDialog = ({ 
+  open, 
+  onOpenChange, 
+  title,
+  currentName,
+  onSubmit 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  currentName: string;
+  onSubmit: (name: string) => void;
+}) => {
+  const [name, setName] = useState(currentName);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) setName(currentName);
+  }, [open, currentName]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    
+    setLoading(true);
+    try {
+      await onSubmit(name.trim());
+      onOpenChange(false);
+    } finally {
+      setLoading(false);
     }
   };
-  
+
   return (
-    <div className="flex justify-end px-2 py-1">
-      <button 
-        onClick={handleAddChannel}
-        className="text-gray-900 hover:bg-black/5 p-1 rounded transition-colors"
-      >
-        <AddIcon className="size-5" />
-      </button>
-    </div>
+    <Dialog.Root open={open} onOpenChange={(e) => onOpenChange(e.open)}>
+      <Portal>
+        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-50" />
+        <Dialog.Positioner className="fixed inset-0 flex items-center justify-center z-50">
+          <Dialog.Content className="bg-white rounded-lg shadow-xl p-6 w-[400px] max-w-[90vw]">
+            <div className="flex items-center justify-between mb-4">
+              <Dialog.Title className="text-lg font-semibold text-gray-900">
+                {title}
+              </Dialog.Title>
+              <Dialog.CloseTrigger className="text-gray-500 hover:text-gray-700">
+                <CloseIcon className="size-5" />
+              </Dialog.CloseTrigger>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name"
+                autoFocus
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <Dialog.CloseTrigger className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
+                  Cancel
+                </Dialog.CloseTrigger>
+                <button
+                  type="submit"
+                  disabled={!name.trim() || loading}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loading ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </form>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
+  );
+};
+
+const CreateChannelDialog = ({ 
+  open, 
+  onOpenChange, 
+  onSubmit 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (name: string) => void;
+}) => {
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    
+    setLoading(true);
+    try {
+      await onSubmit(name.trim());
+      setName("");
+      onOpenChange(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog.Root open={open} onOpenChange={(e) => onOpenChange(e.open)}>
+      <Portal>
+        <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-50" />
+        <Dialog.Positioner className="fixed inset-0 flex items-center justify-center z-50">
+          <Dialog.Content className="bg-white rounded-lg shadow-xl p-6 w-[400px] max-w-[90vw]">
+            <div className="flex items-center justify-between mb-4">
+              <Dialog.Title className="text-lg font-semibold text-gray-900">
+                Create Channel
+              </Dialog.Title>
+              <Dialog.CloseTrigger className="text-gray-500 hover:text-gray-700">
+                <CloseIcon className="size-5" />
+              </Dialog.CloseTrigger>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Channel name"
+                autoFocus
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <Dialog.CloseTrigger className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
+                  Cancel
+                </Dialog.CloseTrigger>
+                <button
+                  type="submit"
+                  disabled={!name.trim() || loading}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loading ? "Creating..." : "Create"}
+                </button>
+              </div>
+            </form>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
+  );
+};
+
+const TreeViewActions = () => {
+  const { addChannel } = useChannelsContext();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleCreateChannel = async (name: string) => {
+    await addChannel(name);
+  };
+
+  return (
+    <>
+      <div className="flex justify-end px-2 py-1">
+        <button 
+          onClick={() => setDialogOpen(true)}
+          className="text-gray-900 hover:bg-black/5 p-1 rounded transition-colors"
+        >
+          <AddIcon className="size-5" />
+        </button>
+      </div>
+      <CreateChannelDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSubmit={handleCreateChannel}
+      />
+    </>
+  );
+};
+
+interface ChannelContextMenuProps {
+  channelId: string;
+  channelName: string;
+  children: React.ReactNode;
+}
+
+const ChannelContextMenu = ({ channelId, channelName, children }: ChannelContextMenuProps) => {
+  const { updateChannel, removeChannel } = useChannelsContext();
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+
+  const handleRename = async (newName: string) => {
+    await updateChannel(channelId, newName);
+  };
+
+  const handleDelete = async () => {
+    await removeChannel(channelId);
+  };
+
+  return (
+    <>
+      <Menu.Root onSelect={(details) => {
+        if (details.value === "rename") {
+          setRenameDialogOpen(true);
+        } else if (details.value === "delete") {
+          handleDelete();
+        }
+      }}>
+        <Menu.ContextTrigger asChild>
+          {children}
+        </Menu.ContextTrigger>
+        <Portal>
+          <Menu.Positioner>
+            <Menu.Content className="bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] z-50">
+              <Menu.Item value="rename" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                <PenIcon className="size-4" />
+                Rename
+              </Menu.Item>
+              <Menu.Item value="delete" className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer">
+                <TrashIcon className="size-4" />
+                Delete
+              </Menu.Item>
+            </Menu.Content>
+          </Menu.Positioner>
+        </Portal>
+      </Menu.Root>
+      <RenameDialog
+        open={renameDialogOpen}
+        onOpenChange={setRenameDialogOpen}
+        title="Rename Channel"
+        currentName={channelName}
+        onSubmit={handleRename}
+      />
+    </>
+  );
+};
+
+interface DocumentContextMenuProps {
+  documentId: string;
+  documentName: string;
+  children: React.ReactNode;
+  onSelect: () => void;
+}
+
+const DocumentContextMenu = ({ documentId, documentName, children, onSelect }: DocumentContextMenuProps) => {
+  const { updateDocument, removeDocument } = useChannelsContext();
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+
+  const handleRename = async (newName: string) => {
+    await updateDocument(documentId, newName);
+  };
+
+  const handleDelete = async () => {
+    await removeDocument(documentId);
+  };
+
+  return (
+    <>
+      <Menu.Root onSelect={(details) => {
+        if (details.value === "rename") {
+          setRenameDialogOpen(true);
+        } else if (details.value === "delete") {
+          handleDelete();
+        }
+      }}>
+        <Menu.ContextTrigger asChild onClick={onSelect}>
+          {children}
+        </Menu.ContextTrigger>
+        <Portal>
+          <Menu.Positioner>
+            <Menu.Content className="bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] z-50">
+              <Menu.Item value="rename" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                <PenIcon className="size-4" />
+                Rename
+              </Menu.Item>
+              <Menu.Item value="delete" className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer">
+                <TrashIcon className="size-4" />
+                Delete
+              </Menu.Item>
+            </Menu.Content>
+          </Menu.Positioner>
+        </Portal>
+      </Menu.Root>
+      <RenameDialog
+        open={renameDialogOpen}
+        onOpenChange={setRenameDialogOpen}
+        title="Rename Document"
+        currentName={documentName}
+        onSubmit={handleRename}
+      />
+    </>
   );
 };
 
@@ -61,7 +340,7 @@ interface TreeNodeProps {
 }
 
 const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocument }: TreeNodeProps) => {
-  const isChannel = node.type === "channel";
+  const isDocument = node.type === "document";
   const isSelected = node.documentId === selectedDocumentId;
 
   const handleClick = () => {
@@ -72,18 +351,20 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
 
   return (
     <TreeView.NodeProvider key={node.id} node={node} indexPath={indexPath}>
-      {node.children && node.children.length > 0 ? (
+      {node.children && node.channelId ? (
         <TreeView.Branch>
-          <TreeView.BranchControl className="flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer data-[state=open]:text-orange-500 transition-colors group">
-            <TreeView.BranchIndicator className="text-gray-500 group-data-[state=open]:text-orange-500">
-              <ArrowRightIcon className="size-4 group-data-[state=open]:hidden" />
-              <ArrowDownIcon className="size-4 hidden group-data-[state=open]:block" />
-            </TreeView.BranchIndicator>
-            <TreeView.BranchText className="flex items-center gap-2 font-medium">
-              <HashtagIcon className="size-4 text-gray-500 group-data-[state=open]:text-orange-500" />
-              {node.name}
-            </TreeView.BranchText>
-          </TreeView.BranchControl>
+          <ChannelContextMenu channelId={node.channelId} channelName={node.name}>
+            <TreeView.BranchControl className="flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer data-[state=open]:text-orange-500 transition-colors group">
+              <TreeView.BranchIndicator className="text-gray-500 group-data-[state=open]:text-orange-500">
+                <ArrowRightIcon className="size-4 group-data-[state=open]:hidden" />
+                <ArrowDownIcon className="size-4 hidden group-data-[state=open]:block" />
+              </TreeView.BranchIndicator>
+              <TreeView.BranchText className="flex items-center gap-2 font-medium">
+                <HashtagIcon className="size-4 text-gray-500 group-data-[state=open]:text-orange-500" />
+                {node.name}
+              </TreeView.BranchText>
+            </TreeView.BranchControl>
+          </ChannelContextMenu>
           <TreeView.BranchContent className="pl-4">
             {node.children.map((child, index) => (
               <TreeNodeComponent 
@@ -96,17 +377,28 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
             ))}
           </TreeView.BranchContent>
         </TreeView.Branch>
+      ) : isDocument && node.documentId ? (
+        <DocumentContextMenu 
+          documentId={node.documentId} 
+          documentName={node.name}
+          onSelect={handleClick}
+        >
+          <TreeView.Item 
+            className={`flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer pl-8 ${isSelected ? 'bg-orange-100 text-orange-600' : ''}`}
+          >
+            <TreeView.ItemText className="flex items-center gap-2">
+              <CalendarIcon className={`size-4 ${isSelected ? 'text-orange-500' : 'text-gray-500'}`} />
+              {node.name}
+            </TreeView.ItemText>
+          </TreeView.Item>
+        </DocumentContextMenu>
       ) : (
         <TreeView.Item 
           onClick={handleClick}
           className={`flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer pl-8 ${isSelected ? 'bg-orange-100 text-orange-600' : ''}`}
         >
           <TreeView.ItemText className="flex items-center gap-2">
-            {isChannel ? (
-               <HashtagIcon className="size-4 text-gray-500" />
-            ) : (
-               <CalendarIcon className={`size-4 ${isSelected ? 'text-orange-500' : 'text-gray-500'}`} />
-            )}
+            <CalendarIcon className={`size-4 ${isSelected ? 'text-orange-500' : 'text-gray-500'}`} />
             {node.name}
           </TreeView.ItemText>
         </TreeView.Item>
