@@ -80,7 +80,7 @@ export const channelsCollection = createCollection(
       const operations: MutationOperation[] = transaction.mutations.map((m) => ({
         type: 'update' as const,
         original: { id: m.key },
-        changes: m.changes as Record<string, unknown>,
+        changes: m.modified as Record<string, unknown>,
         syncMetadata: { relation: ['public', 'channels'] },
       }));
 
