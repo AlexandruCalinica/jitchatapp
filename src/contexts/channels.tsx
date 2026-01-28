@@ -11,7 +11,7 @@ interface ChannelsContextValue {
   addChannel: (name: string, description?: string) => Promise<ChannelWithDocuments>;
   updateChannel: (channelId: string, name: string) => Promise<ChannelWithDocuments>;
   removeChannel: (channelId: string) => Promise<void>;
-  addDocument: (channelId: string, name?: string) => Promise<Document>;
+  addDocument: (channelId: string, name?: string) => string;
   updateDocument: (documentId: string, name: string) => Promise<Document>;
   removeDocument: (documentId: string) => Promise<void>;
   findChannelByDocumentId: (documentId: string) => ChannelWithDocuments | undefined;
@@ -78,21 +78,8 @@ export function ChannelsProvider({ children }: { children: ReactNode }) {
   );
 
   const addDocument = useCallback(
-    async (channelId: string, name?: string): Promise<Document> => {
-      addDocumentSync(channelId, name);
-      return {
-        id: crypto.randomUUID(),
-        name: name || 'Untitled',
-        body: '',
-        color: '#6b7280',
-        icon: 'file-02',
-        lexical_state: null,
-        ref_id: channelId,
-        tenant_id: '',
-        user_id: '',
-        inserted_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+    (channelId: string, name?: string): string => {
+      return addDocumentSync(channelId, name);
     },
     [addDocumentSync]
   );

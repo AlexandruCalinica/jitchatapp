@@ -149,17 +149,19 @@ interface ChannelContextMenuProps {
   channelId: string;
   children: React.ReactNode;
   onRenameClick: () => void;
+  onNewDocument: (documentId: string) => void;
 }
 
-const ChannelContextMenu = ({ channelId, children, onRenameClick }: ChannelContextMenuProps) => {
+const ChannelContextMenu = ({ channelId, children, onRenameClick, onNewDocument }: ChannelContextMenuProps) => {
   const { removeChannel, addDocument } = useChannelsContext();
 
   const handleDelete = async () => {
     await removeChannel(channelId);
   };
 
-  const handleNewDocument = async () => {
-    await addDocument(channelId);
+  const handleNewDocument = () => {
+    const newDocId = addDocument(channelId);
+    onNewDocument(newDocId);
   };
 
   return (
@@ -272,6 +274,10 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
            <ChannelContextMenu 
              channelId={node.channelId} 
              onRenameClick={() => setEditingChannelId(node.channelId!)}
+             onNewDocument={(docId) => {
+               onSelectDocument(docId);
+               setEditingDocumentId(docId);
+             }}
            >
              <TreeView.BranchControl className="flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer data-[state=open]:text-orange-500 transition-colors group">
               <TreeView.BranchIndicator className="text-gray-500 group-data-[state=open]:text-orange-500">

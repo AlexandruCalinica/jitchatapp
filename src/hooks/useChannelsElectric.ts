@@ -28,7 +28,7 @@ interface UseChannelsElectricReturn {
   addChannel: (name: string, description?: string) => void;
   updateChannel: (channelId: string, name: string) => void;
   removeChannel: (channelId: string) => void;
-  addDocument: (channelId: string, title?: string) => void;
+  addDocument: (channelId: string, title?: string) => string;
   updateDocument: (documentId: string, title: string) => void;
   removeDocument: (documentId: string) => void;
   findChannelByDocumentId: (documentId: string) => ChannelWithDocuments | undefined;
@@ -100,8 +100,8 @@ export function useChannelsElectric(): UseChannelsElectricReturn {
     [channelsWithDocs, selectedDocumentId]
   );
 
-  const handleAddDocument = useCallback((channelId: string, title?: string) => {
-    addDocumentToCollection(channelId, title);
+  const handleAddDocument = useCallback((channelId: string, title?: string): string => {
+    return addDocumentToCollection(channelId, title);
   }, []);
 
   const handleUpdateDocument = useCallback((documentId: string, name: string) => {

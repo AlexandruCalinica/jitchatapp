@@ -82,12 +82,15 @@ export const documentsCollection = createCollection(
     },
 
     onUpdate: async ({ transaction }) => {
-      const operations: MutationOperation[] = transaction.mutations.map((m) => ({
-        type: 'update' as const,
-        original: { id: m.key },
-        changes: m.modified as Record<string, unknown>,
-        syncMetadata: { relation: ['public', 'documents'] },
-      }));
+      const operations: MutationOperation[] = transaction.mutations.map((m) => {
+        console.log(m.changes, m.modified)
+        return {
+          type: 'update' as const,
+          original: { id: m.key },
+          changes: m.modified as Record<string, unknown>,
+          syncMetadata: { relation: ['public', 'documents'] },
+        }
+      });
 
       const { txid } = await mutate(operations);
       return { txid };
@@ -106,9 +109,10 @@ export const documentsCollection = createCollection(
   })
 );
 
-export function addDocument(channelId: string, name?: string): void {
+export function addDocument(channelId: string, name?: string): string {
+  const id = crypto.randomUUID();
   documentsCollection.insert({
-    id: crypto.randomUUID(),
+    id,
     name: name || 'Untitled',
     body: '',
     color: '#6b7280',
@@ -120,6 +124,7 @@ export function addDocument(channelId: string, name?: string): void {
     inserted_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   });
+  return id;
 }
 
 export function updateDocumentName(documentId: string, name: string): void {
