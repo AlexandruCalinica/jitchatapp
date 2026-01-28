@@ -8,6 +8,7 @@
         "@ark-ui/react": "^5.30.0",
         "@floating-ui/dom": "^1.7.1",
         "@fontsource/barlow-semi-condensed": "^5.2.7",
+        "@fontsource/google-sans-flex": "^5.2.2",
         "@lexical/link": "^0.33.0",
         "@lexical/react": "^0.33.0",
         "@svgr/core": "^8.1.0",
@@ -157,6 +158,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.9", "", {}, "sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg=="],
 
     "@fontsource/barlow-semi-condensed": ["@fontsource/barlow-semi-condensed@5.2.7", "", {}, "sha512-jkNDrHJe1+rUQkd71f9fdwPmJf7SF506AHfwMChlDrCPx5eLAE28tcmpGDB487yE1fQIEGfgfL4YnE4/KEniuA=="],
+
+    "@fontsource/google-sans-flex": ["@fontsource/google-sans-flex@5.2.2", "", {}, "sha512-csDVeKsxOlVt/sJdgk39rL8pJeW7Pi+JFaJ87H5uuX9hkU+V5EGE+WCWkq6QZaIPZAsfjSF8fA1cuD84QbX0dA=="],
 
     "@iconify-json/icon-park-outline": ["@iconify-json/icon-park-outline@1.2.2", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-7VkMWOZTIMNkC9+oAL4I5kVlVC5Pq3nQpruZ4E3cLyKaeV95gaUrEilUkvGW71fgsFYCBWAmOZ3KpM4ux0j0zA=="],
 

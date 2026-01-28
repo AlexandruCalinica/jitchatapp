@@ -75,7 +75,7 @@ export const createNodes = (user?: User) => [
   },
   {
     replace: ListItemNode,
-    with: () => $createExtendedListItemNode(user, configState.defaultDraft),
+    with: (node: ListItemNode) => $createExtendedListItemNode(user, configState.defaultDraft, undefined, node.getValue()),
     withKlass: ExtendedListItemNode,
   },
 ];

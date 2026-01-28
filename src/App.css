@@ -3,10 +3,15 @@
 html, body, #root {
   height: 100%;
   margin: 0;
-  font-family: "Barlow Semi Condensed", sans-serif;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 300;
 }
 
 @theme {
+  --list-style-type-circle: circle;
+  --list-style-type-square: square;
+  --list-style-type-dash: "– ";
+
   /* --- Zed Core Palette --- */
   --color-zed-bg: light-dark(#fafafa, #282c34);
   --color-zed-sidebar: light-dark(#f2f2f2, #21252b);
@@ -301,7 +306,6 @@ p[data-user] {
   padding-left: 48px;
   padding-top: 4px;
   padding-bottom: 4px;
-  /*border-left: 3px solid var(--color-zed-border);*/
   transition: border-color 0.2s ease, background-color 0.2s ease;
 
   &::after {
@@ -364,10 +368,15 @@ p[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code
   filter: none;
 }
 
+p[data-user][data-draft="true"][data-own] :is(span, strong, em, u, s, code, mark, sub, sup) {
+  text-decoration: underline dashed var(--color-zed-muted);
+  text-underline-offset: 3px;
+}
+
 /* Blockquote styles */
 blockquote[data-user] {
   position: relative;
-  padding-left: 36px;
+  padding-left: 40px;
   padding-top: 4px;
   padding-bottom: 4px;
   border-left: 3px solid var(--color-zed-border);
@@ -382,9 +391,9 @@ blockquote[data-user] {
     content: "@" attr(data-user);
     display: inline-block;
     position: absolute;
-    top: 8px;
+    top: 4px;
     right: 4px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--color-zed-muted);
     font-style: normal;
@@ -394,15 +403,15 @@ blockquote[data-user] {
     content: "";
     display: inline-block;
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 24px;
-    height: 24px;
+    top: 6px;
+    left: 12px;
+    width: 20px;
+    height: 20px;
     background-image: var(--avatar-url);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 4px;
+    border-radius: 100%;
   }
 }
 
@@ -439,11 +448,16 @@ blockquote[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u
   filter: none;
 }
 
+blockquote[data-user][data-draft="true"][data-own] :is(span, strong, em, u, s, code, mark, sub, sup) {
+  text-decoration: underline dashed var(--color-zed-muted);
+  text-underline-offset: 3px;
+}
+
 /* List container styles - message block with avatar */
 ul[data-user],
 ol[data-user] {
   position: relative;
-  padding-left: 36px;
+  padding-left: 40px;
   padding-top: 4px;
   padding-bottom: 4px;
   /*border-left: 3px solid var(--color-zed-border);*/
@@ -455,9 +469,9 @@ ol[data-user] {
     content: "@" attr(data-user);
     display: inline-block;
     position: absolute;
-    top: 8px;
+    top: 4px;
     right: 4px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--color-zed-muted);
   }
@@ -466,15 +480,15 @@ ol[data-user] {
     content: "";
     display: inline-block;
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 24px;
-    height: 24px;
+    top: 6px;
+    left: 12px;
+    width: 20px;
+    height: 20px;
     background-image: var(--avatar-url);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 4px;
+    border-radius: 100%;
   }
 }
 
@@ -488,6 +502,42 @@ ol[data-user][data-draft="true"] {
     color: var(--color-zed-muted);
     font-style: italic;
   }
+}
+
+li ul[data-user],
+li ol[data-user] {
+  padding-left: 24px;
+
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
+li:has(> ul:first-child),
+li:has(> ol:first-child) {
+  list-style-type: none;
+}
+
+/* Hide checkbox on checklist items that contain nested lists */
+li.editor__listItemChecked:has(> ul:first-child),
+li.editor__listItemChecked:has(> ol:first-child),
+li.editor__listItemUnchecked:has(> ul:first-child),
+li.editor__listItemUnchecked:has(> ol:first-child) {
+  padding-left: 0;
+}
+
+li.editor__listItemChecked:has(> ul:first-child)::before,
+li.editor__listItemChecked:has(> ol:first-child)::before,
+li.editor__listItemChecked:has(> ul:first-child)::after,
+li.editor__listItemChecked:has(> ol:first-child)::after,
+li.editor__listItemUnchecked:has(> ul:first-child)::before,
+li.editor__listItemUnchecked:has(> ol:first-child)::before {
+  display: none;
+}
+
+ul[data-marker="dash"] {
+  list-style-type: "–   ";
 }
 
 ul[data-user][data-timestamp],
@@ -515,9 +565,19 @@ ol[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, cod
   filter: none;
 }
 
+li[data-user][data-draft="true"][data-own] :is(span, strong, em, u, s, code, mark, sub, sup) {
+  text-decoration: underline dashed var(--color-zed-muted);
+  text-underline-offset: 3px;
+}
+
 /* List item styles - nested content, no individual avatar */
 li[data-user] {
-  margin-left: 16px;
+  margin-left: 24px;
+}
+
+li[data-user].editor__listItemChecked,
+li[data-user].editor__listItemUnchecked {
+  margin-left: 1px;
 }
 
 span[data-user]:has(> div > img) {
@@ -540,4 +600,78 @@ span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
 
 [data-peek] span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
   filter: none;
+}
+
+
+.editor__listItemChecked,
+.editor__listItemUnchecked {
+  position: relative;
+  padding: 0 23px; /* Increased padding to better align text */
+  list-style: none;
+  outline: none;
+}
+
+.editor__listItemChecked {
+  text-decoration: line-through;
+  color: var(--color-gray-500)
+}
+
+.editor__listItemUnchecked::before,
+.editor__listItemChecked::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-45%);
+  cursor: pointer;
+  border-radius: 3px; /* Slightly rounded corners */
+  transition: all 0.2s ease; /* Smooth transitions */
+}
+
+.editor__listItemUnchecked::before {
+  border: 1px solid var(--color-gray-300); /* Light grayModern border for unchecked */
+  background-color: transparent;
+}
+
+.editor__listItemChecked::before {
+  background-color: var(--color-orange-500); /* Tailwind 'indigo-500' for a nice blue fill */
+  border: 1px solid var(--color-orange-500); /* Border color matches background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor__listItemChecked::after {
+  content: '';
+  width: 5px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  position: absolute;
+  top: 50%;
+  left: 5.5px;
+  transform: translateY(-60%) rotate(45deg);
+}
+
+.editor__listItemUnchecked:hover::before,
+.editor__listItemChecked:hover::before {
+  border-color: var(--color-orange-700); /* Darker blue border on hover */
+}
+
+.editor__listItemUnchecked:focus::before,
+.editor__listItemChecked:focus::before {
+  box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.4); /* Blue focus ring */
+}
+
+.editor__placeholder {
+  position: absolute;
+  top: 0px;
+  left: 16px;
+  color: var(--color-gray-400);
+  user-select: none;
+  font-weight: 200;
+  cursor: text;
 }

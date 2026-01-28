@@ -12,6 +12,7 @@ import LoadingIcon from "~icons/solar/refresh-circle-outline";
 import CloseIcon from "~icons/solar/close-circle-outline";
 import PenIcon from "~icons/solar/pen-outline";
 import TrashIcon from "~icons/solar/trash-bin-minimalistic-outline";
+import FileAddIcon from "~icons/solar/document-add-outline";
 import { useChannelsContext } from "../../contexts/channels";
 import { formatDocumentDate } from "../../services/channels";
 import { ChannelWithDocuments } from "../../hooks/useChannelsElectric";
@@ -226,7 +227,7 @@ interface ChannelContextMenuProps {
 }
 
 const ChannelContextMenu = ({ channelId, channelName, children }: ChannelContextMenuProps) => {
-  const { updateChannel, removeChannel } = useChannelsContext();
+  const { updateChannel, removeChannel, addDocument } = useChannelsContext();
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
 
   const handleRename = async (newName: string) => {
@@ -237,10 +238,16 @@ const ChannelContextMenu = ({ channelId, channelName, children }: ChannelContext
     await removeChannel(channelId);
   };
 
+  const handleNewDocument = async () => {
+    await addDocument(channelId);
+  };
+
   return (
     <>
       <Menu.Root onSelect={(details) => {
-        if (details.value === "rename") {
+        if (details.value === "new-document") {
+          handleNewDocument();
+        } else if (details.value === "rename") {
           setRenameDialogOpen(true);
         } else if (details.value === "delete") {
           handleDelete();
@@ -252,6 +259,11 @@ const ChannelContextMenu = ({ channelId, channelName, children }: ChannelContext
         <Portal>
           <Menu.Positioner>
             <Menu.Content className="bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] z-50">
+              <Menu.Item value="new-document" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                <FileAddIcon className="size-4" />
+                New Document
+              </Menu.Item>
+              <Menu.Separator className="h-px bg-gray-200 my-1" />
               <Menu.Item value="rename" className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
                 <PenIcon className="size-4" />
                 Rename

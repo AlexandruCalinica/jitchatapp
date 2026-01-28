@@ -18,3 +18,11 @@ export const timestampState = createState<"timestamp", number | undefined>(
     unparse: (value) => JSON.stringify(value),
   }
 );
+
+export const listMarkerState = createState<"listMarker", string | undefined>(
+  "listMarker",
+  {
+    parse: (json) => (typeof json === "string" ? json : undefined),
+    unparse: (value) => value,
+  }
+);

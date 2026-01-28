@@ -1,9 +1,21 @@
 import { $create, $setState, $getState } from "lexical";
-import { ListNode, ListType } from "@lexical/list";
+import { ListNode, ListType, $isListItemNode } from "@lexical/list";
 
 import { User } from "../shared/types";
-import { userState, draftState, timestampState } from "../plugins/nodeStates";
+import { userState, draftState, timestampState, listMarkerState } from "../plugins/nodeStates";
 import { getAvatarUrl } from "../../../utils/avatar";
+
+function updateChildrenListItemValue(list: ListNode): void {
+  let value = list.getStart();
+  for (const child of list.getChildren()) {
+    if ($isListItemNode(child)) {
+      if (child.getValue() !== value) {
+        child.setValue(value);
+      }
+      value++;
+    }
+  }
+}
 
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
@@ -19,6 +31,9 @@ export class ExtendedListNode extends ListNode {
   $config() {
     return this.config("extended-list", {
       extends: ListNode,
+      $transform: (node: ExtendedListNode): void => {
+        updateChildrenListItemValue(node);
+      },
     });
   }
 
@@ -27,6 +42,7 @@ export class ExtendedListNode extends ListNode {
     const user = $getState(this, userState);
     const isDraft = $getState(this, draftState);
     const timestamp = $getState(this, timestampState);
+    const marker = $getState(this, listMarkerState);
 
     if (user) {
       dom.setAttribute("data-user", user.username);
@@ -40,6 +56,9 @@ export class ExtendedListNode extends ListNode {
       dom.setAttribute("data-timestamp", timestamp.toString());
       dom.setAttribute("data-time", formatTime(timestamp));
     }
+    if (marker) {
+      dom.setAttribute("data-marker", marker);
+    }
     return dom;
   }
 
@@ -48,6 +67,7 @@ export class ExtendedListNode extends ListNode {
     const user = $getState(this, userState);
     const isDraft = $getState(this, draftState);
     const timestamp = $getState(this, timestampState);
+    const marker = $getState(this, listMarkerState);
 
     if (user) {
       dom.setAttribute("data-user", user.username);
@@ -72,6 +92,12 @@ export class ExtendedListNode extends ListNode {
       dom.removeAttribute("data-time");
     }
 
+    if (marker) {
+      dom.setAttribute("data-marker", marker);
+    } else {
+      dom.removeAttribute("data-marker");
+    }
+
     return update;
   }
 }
@@ -80,7 +106,8 @@ export function $createExtendedListNode(
   listType: ListType,
   user?: User,
   isDraft?: boolean,
-  timestamp?: number
+  timestamp?: number,
+  marker?: string
 ): ExtendedListNode {
   let node = $create(ExtendedListNode);
   node = node.setListType(listType);
@@ -95,6 +122,10 @@ export function $createExtendedListNode(
 
   if (timestamp !== undefined) {
     node = $setState(node, timestampState, timestamp);
+  }
+
+  if (marker) {
+    node = $setState(node, listMarkerState, marker);
   }
 
   return node;

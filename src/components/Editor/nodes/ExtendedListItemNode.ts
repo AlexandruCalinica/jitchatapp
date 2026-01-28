@@ -79,7 +79,8 @@ export class ExtendedListItemNode extends ListItemNode {
 export function $createExtendedListItemNode(
   user?: User,
   isDraft?: boolean,
-  timestamp?: number
+  timestamp?: number,
+  value?: number
 ): ExtendedListItemNode {
   let node = $setState($create(ExtendedListItemNode), userState, user);
 
@@ -89,6 +90,10 @@ export function $createExtendedListItemNode(
 
   if (timestamp !== undefined) {
     node = $setState(node, timestampState, timestamp);
+  }
+
+  if (value !== undefined) {
+    node.setValue(value);
   }
 
   return node;

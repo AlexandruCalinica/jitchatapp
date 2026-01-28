@@ -13,7 +13,8 @@ import React, {
 import * as Y from "yjs";
 import { UndoManager } from "yjs";
 import { twMerge } from "tailwind-merge";
-import { TRANSFORMERS } from "@lexical/markdown";
+import { TRANSFORMERS, UNORDERED_LIST } from "@lexical/markdown";
+import { DASH_LIST, STAR_LIST } from "./plugins/DashListTransformer";
 import { cva, VariantProps } from "class-variance-authority";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { PhoenixChannelProvider } from "./utils/y-phoenix-channel";
@@ -70,7 +71,7 @@ import { FollowModePlugin } from "./plugins/FollowModePlugin";
 import { ScrollBroadcastPlugin } from "./plugins/ScrollBroadcastPlugin";
 
 const theme: EditorThemeClasses = {
-  paragraph: "pl-4 pb-1 mb-1 data-[own=true]:bg-zed-active",
+  paragraph: "pl-4 pb-1 mb-1",
   heading: {
     h1: "text-lg font-bold mb-4 pl-4",
     h2: "text-md font-bold mb-4 pl-4",
@@ -81,18 +82,17 @@ const theme: EditorThemeClasses = {
   list: {
     ulDepth: [
       "p-0 m-0 list-outside list-disc",
-      "p-0 m-0 list-outside list-[circle]",
-      "p-0 m-0 list-outside list-square",
+      "p-0 m-0 list-outside list-(--list-style-type-circle)",
+      "p-0 m-0 list-outside list-(--list-style-type-square)",
+      "p-0 m-0 list-outside list-(--list-style-type-dash)",
       "p-0 m-0 list-outside list-disc",
-      "p-0 m-0 list-outside list-[circle]",
-      "p-0 m-0 list-outside list-square",
     ],
     nested: {
-      listitem: "editor__nestedListItem list-none",
+      listitem: "editor__nestedListItem",
     },
     ol: "p-0 m-0 list-outside list-decimal mb-2 pl-2",
     ul: "p-0 m-0 list-outside mb-2 pl-2",
-    listitem: "ml-8",
+    listitem: "",
     olDepth: [
       "p-0 m-0 list-outside",
       "p-0 m-0 list-outside list-[upper-alpha]",
@@ -100,8 +100,8 @@ const theme: EditorThemeClasses = {
       "p-0 m-0 list-outside list-[upper-roman]",
       "p-0 m-0 list-outside list-[lower-roman]",
     ],
-    listitemChecked: "editor__listItemChecked",
-    listitemUnchecked: "editor__listItemUnchecked",
+    listitemChecked: "list-none editor__listItemChecked",
+    listitemUnchecked: "list-none editor__listItemUnchecked",
   },
   link: "text-zed-blue hover:text-zed-blue/80",
   text: {
@@ -386,7 +386,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           <ImagesPlugin />
           <DragDropPastePlugin />
 
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <MarkdownShortcutPlugin transformers={[DASH_LIST, STAR_LIST, ...TRANSFORMERS.filter(t => t !== UNORDERED_LIST)]} />
 
           {onMentionsSearch && (
             <MentionsPlugin
@@ -448,18 +448,18 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           <EditorPlugin
             ErrorBoundary={LexicalErrorBoundary}
             placeholder={
-              <span
+              <p
                 onClick={() => editor.current?.focus()}
                 className={twMerge(
                   contentEditableVariants({
                     size,
                     className: placeholderClassName,
                   }),
-                  "absolute top-1 text-zed-muted pl-[32px] animate-fadeIn"
+                  "editor__placeholder"
                 )}
               >
                 {placeholder}
-              </span>
+              </p>
             }
             contentEditable={
               <div
