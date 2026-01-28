@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, ReactNode } from 'react';
+import { forwardRef, useImperativeHandle, useRef, ReactNode, useState, useEffect } from 'react';
 import { Editable } from '@ark-ui/react/editable';
 import { twMerge } from 'tailwind-merge';
 import { cn } from '../../util/cn';
@@ -29,6 +29,11 @@ export const InlineEditable = forwardRef<InlineEditableHandle, InlineEditablePro
     ref
   ) => {
     const editableRef = useRef<HTMLDivElement>(null);
+    const [localValue, setLocalValue] = useState(value);
+
+    useEffect(() => {
+      setLocalValue(value);
+    }, [value]);
 
     useImperativeHandle(ref, () => ({
       startEdit: () => {
@@ -42,51 +47,58 @@ export const InlineEditable = forwardRef<InlineEditableHandle, InlineEditablePro
     }));
 
     const handleCommit = (details: { value: string }) => {
+      setLocalValue(details.value);
       onCommit(details.value);
     };
 
     const baseInputClasses = cn(
-      'text-zed-fg',
+      'w-full',
+      'min-w-0',
       'bg-transparent',
       'border-none',
       'outline-none',
       'focus:outline-none',
-      'focus:ring-2',
-      'focus:ring-orange-500',
+      'ring-0',
+      'focus:ring-0',
       'px-0',
       'py-0',
       'font-inherit',
-      'text-inherit'
+      'text-inherit',
+      'text-current'
     );
 
     const basePreviewClasses = cn(
-      'text-zed-fg',
       'bg-transparent',
       'border-none',
       'outline-none',
-      'cursor-text',
+      'cursor-pointer',
       'px-0',
-      'py-0'
+      'py-0',
+      'truncate'
     );
 
     return (
       <Editable.Root
         ref={editableRef}
-        value={value}
+        value={localValue}
         onValueCommit={handleCommit}
         activationMode="dblclick"
         submitMode="both"
         selectOnFocus={true}
+        className="min-w-0 flex-1"
       >
-        <Editable.Area className={className}>
+        <Editable.Area className={twMerge('min-w-0', className)}>
           <Editable.Input
             className={twMerge(baseInputClasses, inputClassName)}
             onKeyDown={(e) => {
               e.stopPropagation();
             }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
           />
           <Editable.Preview className={twMerge(basePreviewClasses, previewClassName)}>
-            {children || value}
+            {children || localValue}
           </Editable.Preview>
         </Editable.Area>
       </Editable.Root>
