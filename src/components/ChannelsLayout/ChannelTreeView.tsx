@@ -41,7 +41,7 @@ function buildTreeNodes(channels: ChannelWithDocuments[]): TreeNode[] {
     type: "channel" as const,
     channelId: channel.id,
     children: channel.documents.map(doc => ({
-      id: `doc-${doc.id}`,
+      id: `${doc.id}`,
       name: getDocumentDisplayName(doc),
       type: "document" as const,
       documentId: doc.id,
@@ -49,12 +49,12 @@ function buildTreeNodes(channels: ChannelWithDocuments[]): TreeNode[] {
   }));
 }
 
-const CreateChannelDialog = ({ 
-  open, 
-  onOpenChange, 
-  onSubmit 
-}: { 
-  open: boolean; 
+const CreateChannelDialog = ({
+  open,
+  onOpenChange,
+  onSubmit
+}: {
+  open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (name: string) => void;
 }) => {
@@ -64,10 +64,10 @@ const CreateChannelDialog = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    
+
     setLoading(true);
     try {
-      await onSubmit(name.trim());
+      onSubmit(name.trim());
       setName("");
       onOpenChange(false);
     } finally {
@@ -129,7 +129,7 @@ const TreeViewActions = () => {
   return (
     <>
       <div className="flex justify-end px-2 py-1">
-        <button 
+        <button
           onClick={() => setDialogOpen(true)}
           className="text-gray-900 hover:bg-black/5 p-1 rounded transition-colors"
         >
@@ -271,8 +271,8 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
     <TreeView.NodeProvider key={node.id} node={node} indexPath={indexPath}>
       {node.children && node.channelId ? (
          <TreeView.Branch>
-           <ChannelContextMenu 
-             channelId={node.channelId} 
+           <ChannelContextMenu
+             channelId={node.channelId}
              onRenameClick={() => setEditingChannelId(node.channelId!)}
              onNewDocument={(docId) => {
                onSelectDocument(docId);
@@ -291,6 +291,10 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
                 <HashtagIcon className="size-4 text-gray-500 group-data-[state=open]:text-orange-500" />
                 <InlineEditable
                   value={node.name}
+                  edit={editingChannelId === node.channelId}
+                  onEditChange={(editing) => {
+                    if (!editing) setEditingChannelId(null);
+                  }}
                   onCommit={async (newName) => {
                     if (!newName.trim()) return;
                     await updateChannel(node.channelId!, newName.trim());
@@ -305,9 +309,9 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
           </ChannelContextMenu>
            <TreeView.BranchContent className="pl-4">
             {node.children.map((child, index) => (
-              <TreeNodeComponent 
-                key={child.id} 
-                node={child} 
+              <TreeNodeComponent
+                key={child.id}
+                node={child}
                 indexPath={[...indexPath, index]}
                 selectedDocumentId={selectedDocumentId}
                 onSelectDocument={onSelectDocument}
@@ -320,12 +324,12 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
            </TreeView.BranchContent>
         </TreeView.Branch>
        ) : isDocument && node.documentId ? (
-         <DocumentContextMenu 
-           documentId={node.documentId} 
+         <DocumentContextMenu
+           documentId={node.documentId}
            onSelect={handleClick}
            onRenameClick={() => setEditingDocumentId(node.documentId!)}
          >
-           <TreeView.Item 
+           <TreeView.Item
              className={`flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer pl-8 ${isSelected ? 'bg-orange-100 text-orange-600' : ''}`}
            >
              <TreeView.ItemText className="flex items-center gap-2">
@@ -347,7 +351,7 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
            </TreeView.Item>
          </DocumentContextMenu>
        ) : (
-         <TreeView.Item 
+         <TreeView.Item
            onClick={handleClick}
            className={`flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer pl-8 ${isSelected ? 'bg-orange-100 text-orange-600' : ''}`}
          >
@@ -383,7 +387,7 @@ const LoadingState = () => (
 const ErrorState = ({ error, onRetry }: { error: string; onRetry: () => void }) => (
   <div className="flex flex-col items-center justify-center py-8 text-gray-500">
     <p className="text-sm text-red-500 mb-2">{error}</p>
-    <button 
+    <button
       onClick={onRetry}
       className="text-sm text-orange-500 hover:text-orange-600"
     >
@@ -403,6 +407,8 @@ export const ChannelTreeView = () => {
   const { channels, loading, error, selectedDocumentId, selectDocument, refresh } = useChannelsContext();
   const [editingChannelId, setEditingChannelId] = useState<string | null>(null);
   const [editingDocumentId, setEditingDocumentId] = useState<string | null>(null);
+
+  console.log(selectedDocumentId)
 
   const collection = useMemo(() => {
     const treeNodes = buildTreeNodes(channels);
@@ -459,9 +465,9 @@ export const ChannelTreeView = () => {
       >
           <TreeView.Tree>
             {collection.rootNode.children?.map((node, index) => (
-              <TreeNodeComponent 
-                key={node.id} 
-                node={node} 
+              <TreeNodeComponent
+                key={node.id}
+                node={node}
                 indexPath={[index]}
                 selectedDocumentId={selectedDocumentId}
                 onSelectDocument={selectDocument}
