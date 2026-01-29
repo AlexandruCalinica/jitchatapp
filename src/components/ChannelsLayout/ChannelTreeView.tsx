@@ -276,7 +276,10 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
              onRenameClick={() => setEditingChannelId(node.channelId!)}
              onNewDocument={(docId) => {
                onSelectDocument(docId);
-               setEditingDocumentId(docId);
+               // Delay entering edit mode to let editor finish auto-focusing
+               setTimeout(() => {
+                 setEditingDocumentId(docId);
+               }, 100);
              }}
            >
              <TreeView.BranchControl className="flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer data-[state=open]:text-orange-500 transition-colors group">
@@ -327,15 +330,19 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
            >
              <TreeView.ItemText className="flex items-center gap-2">
                <CalendarIcon className={`size-4 ${isSelected ? 'text-orange-500' : 'text-gray-500'}`} />
-               <InlineEditable
-                 value={node.name}
-                 onCommit={async (newName) => {
-                   if (!newName.trim()) return;
-                   await updateDocument(node.documentId!, newName.trim());
-                   setEditingDocumentId(null);
-                 }}
-                 className="flex-1"
-               />
+                <InlineEditable
+                  value={node.name}
+                  edit={editingDocumentId === node.documentId}
+                  onEditChange={(editing) => {
+                    if (!editing) setEditingDocumentId(null);
+                  }}
+                  onCommit={async (newName) => {
+                    if (!newName.trim()) return;
+                    await updateDocument(node.documentId!, newName.trim());
+                    setEditingDocumentId(null);
+                  }}
+                  className="flex-1"
+                />
              </TreeView.ItemText>
            </TreeView.Item>
          </DocumentContextMenu>
@@ -346,15 +353,19 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
          >
            <TreeView.ItemText className="flex items-center gap-2">
              <CalendarIcon className={`size-4 ${isSelected ? 'text-orange-500' : 'text-gray-500'}`} />
-             <InlineEditable
-               value={node.name}
-               onCommit={async (newName) => {
-                 if (!newName.trim()) return;
-                 await updateDocument(node.documentId!, newName.trim());
-                 setEditingDocumentId(null);
-               }}
-               className="flex-1"
-             />
+              <InlineEditable
+                value={node.name}
+                edit={editingDocumentId === node.documentId}
+                onEditChange={(editing) => {
+                  if (!editing) setEditingDocumentId(null);
+                }}
+                onCommit={async (newName) => {
+                  if (!newName.trim()) return;
+                  await updateDocument(node.documentId!, newName.trim());
+                  setEditingDocumentId(null);
+                }}
+                className="flex-1"
+              />
            </TreeView.ItemText>
          </TreeView.Item>
        )}

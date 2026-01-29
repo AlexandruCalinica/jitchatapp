@@ -10,6 +10,8 @@ export interface InlineEditableHandle {
 export interface InlineEditableProps {
   value: string;
   onCommit: (value: string) => void | Promise<void>;
+  edit?: boolean;
+  onEditChange?: (editing: boolean) => void;
   className?: string;
   inputClassName?: string;
   previewClassName?: string;
@@ -21,6 +23,8 @@ export const InlineEditable = forwardRef<InlineEditableHandle, InlineEditablePro
     {
       value,
       onCommit,
+      edit,
+      onEditChange,
       className,
       inputClassName,
       previewClassName,
@@ -46,9 +50,17 @@ export const InlineEditable = forwardRef<InlineEditableHandle, InlineEditablePro
       },
     }));
 
-    const handleCommit = (details: { value: string }) => {
-      setLocalValue(details.value);
-      onCommit(details.value);
+    const handleCommit = (e: { value: string }) => {
+      onCommit(e.value);
+      onEditChange?.(false);
+    };
+
+    const handleValueChange = (e: { value: string }) => {
+      setLocalValue(e.value);
+    };
+
+    const handleEditChange = (details: { edit: boolean }) => {
+      onEditChange?.(details.edit);
     };
 
     const baseInputClasses = cn(
@@ -81,21 +93,18 @@ export const InlineEditable = forwardRef<InlineEditableHandle, InlineEditablePro
       <Editable.Root
         ref={editableRef}
         value={localValue}
+        edit={edit}
+        onEditChange={handleEditChange}
         onValueCommit={handleCommit}
+        onValueChange={handleValueChange}
         activationMode="dblclick"
-        submitMode="both"
+        submitMode="enter"
         selectOnFocus={true}
         className="min-w-0 flex-1"
       >
         <Editable.Area className={twMerge('min-w-0', className)}>
           <Editable.Input
             className={twMerge(baseInputClasses, inputClassName)}
-            onKeyDown={(e) => {
-              e.stopPropagation();
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
           />
           <Editable.Preview className={twMerge(basePreviewClasses, previewClassName)}>
             {children || localValue}
