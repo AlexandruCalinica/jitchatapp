@@ -373,7 +373,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
       <FollowChannelProvider documentId={documentId ?? null}>
         <div
           ref={containerRef}
-          className="relative w-full h-fit lexical-editor cursor-text animate-fadeIn"
+          className="relative pl-4 w-full h-fit cursor-text"
         >
           <LexicalComposer initialConfig={initialConfig}>
           <EditorRefPlugin editorRef={editor} />
@@ -464,7 +464,7 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
             contentEditable={
               <div
                 ref={onRef}
-                className={cn("relative animate-fadeIn", className)}
+                // className={cn("relative", className)}
               >
                 <ContentEditable
                   onBlur={onBlur}

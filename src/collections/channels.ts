@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { createCollection } from '@tanstack/react-db';
 import { electricCollectionOptions } from '@tanstack/electric-db-collection';
 import { getToken, getBackendUrl } from '../services/auth';
@@ -77,12 +78,14 @@ export const channelsCollection = createCollection(
     },
 
     onUpdate: async ({ transaction }) => {
-      const operations: MutationOperation[] = transaction.mutations.map((m) => ({
-        type: 'update' as const,
-        original: { id: m.key },
-        changes: m.modified as Record<string, unknown>,
-        syncMetadata: { relation: ['public', 'channels'] },
-      }));
+      const operations: MutationOperation[] = transaction.mutations.map((m) => {
+        return {
+          type: 'update' as const,
+          original: { id: m.key },
+          changes: m.changes as Record<string, unknown>,
+          syncMetadata: { relation: ['public', 'channels'] },
+        }
+      });
 
       const { txid } = await mutate(operations);
       return { txid };
@@ -103,7 +106,7 @@ export const channelsCollection = createCollection(
 
 export function addChannel(name: string, description?: string): void {
   channelsCollection.insert({
-    id: crypto.randomUUID(),
+    id: `chan_${nanoid()}`,
     name,
     description,
     tenant_id: '',

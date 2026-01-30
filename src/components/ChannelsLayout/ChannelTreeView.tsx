@@ -270,7 +270,7 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
   return (
     <TreeView.NodeProvider key={node.id} node={node} indexPath={indexPath}>
       {node.children && node.channelId ? (
-         <TreeView.Branch>
+         <TreeView.Branch className="group">
            <ChannelContextMenu
              channelId={node.channelId}
              onRenameClick={() => setEditingChannelId(node.channelId!)}
@@ -282,13 +282,13 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
                }, 100);
              }}
            >
-             <TreeView.BranchControl className="flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer data-[state=open]:text-orange-500 transition-colors group">
-              <TreeView.BranchIndicator className="text-gray-500 group-data-[state=open]:text-orange-500">
+             <TreeView.BranchControl className="flex items-center gap-1 px-1 py-1 w-full text-sm text-gray-900 hover:bg-gray-900/5 rounded cursor-pointer group-data-[selected]:text-orange-500 transition-colors">
+              <TreeView.BranchIndicator className="text-gray-500 group-data-[selected]:text-orange-500">
                 <ArrowRightIcon className="size-4 group-data-[state=open]:hidden" />
                 <ArrowDownIcon className="size-4 hidden group-data-[state=open]:block" />
               </TreeView.BranchIndicator>
+              <HashtagIcon className="size-[14px] text-gray-900 group-data-[selected]:text-orange-500" />
               <TreeView.BranchText className="flex items-center gap-2 font-medium">
-                <HashtagIcon className="size-4 text-gray-500 group-data-[state=open]:text-orange-500" />
                 <InlineEditable
                   value={node.name}
                   edit={editingChannelId === node.channelId}
@@ -307,7 +307,7 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
               </TreeView.BranchText>
             </TreeView.BranchControl>
           </ChannelContextMenu>
-           <TreeView.BranchContent className="pl-4">
+           <TreeView.BranchContent>
             {node.children.map((child, index) => (
               <TreeNodeComponent
                 key={child.id}
@@ -330,10 +330,10 @@ const TreeNodeComponent = ({ node, indexPath, selectedDocumentId, onSelectDocume
            onRenameClick={() => setEditingDocumentId(node.documentId!)}
          >
            <TreeView.Item
-             className={`flex items-center gap-2 px-2 py-1.5 w-full text-sm text-gray-900 hover:bg-black/5 rounded cursor-pointer pl-8 ${isSelected ? 'bg-orange-100 text-orange-600' : ''}`}
+             className={`flex items-center gap-1.5 py-1 w-full text-sm text-gray-900 hover:bg-gray-900/5 rounded cursor-pointer pl-10 data-[selected]:bg-gray-900/5 data-[selected]:text-orange-500`}
            >
-             <TreeView.ItemText className="flex items-center gap-2">
-               <CalendarIcon className={`size-4 ${isSelected ? 'text-orange-500' : 'text-gray-500'}`} />
+             <CalendarIcon className="size-[14px]" />
+             <TreeView.ItemText className="flex items-center">
                 <InlineEditable
                   value={node.name}
                   edit={editingDocumentId === node.documentId}

@@ -65,16 +65,6 @@ html, body, #root {
     }
   }
 
-  --animate-wave: wave 1s linear infinite;
-  @keyframes wave {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
   --animate-slideDownFade: slideDownAndFade 300ms ease-out;
   @keyframes slideDownAndFade {
     from {
@@ -272,59 +262,20 @@ html, body, #root {
       filter: grayscale(0%) blur(0px);
     }
   }
-
-  --animate-commitFlash: commitFlash 300ms ease-out;
-  @keyframes commitFlash {
-    0% {
-      border-left-color: var(--color-zed-blue);
-    }
-    40% {
-      border-left-color: var(--color-zed-blue);
-      box-shadow: 0 0 8px color-mix(in srgb, var(--color-zed-blue) 40%, transparent);
-    }
-    100% {
-      border-left-color: var(--color-zed-blue);
-      box-shadow: none;
-    }
-  }
-
-  --animate-timestampFadeIn: timestampFadeIn 250ms ease-out;
-  @keyframes timestampFadeIn {
-    from {
-      opacity: 0;
-      transform: translateX(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
 }
 
 p[data-user] {
   position: relative;
-  padding-left: 48px;
+  padding-left: 32px;
   padding-top: 4px;
   padding-bottom: 4px;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-
-  &::after {
-    content: "@" attr(data-user);
-    display: inline-block;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--color-zed-muted);
-  }
 
   &::before {
     content: "";
     display: inline-block;
     position: absolute;
     top: 6px;
-    left: 16px;
+    left: 0px;
     width: 20px;
     height: 20px;
     background-image: var(--avatar-url);
@@ -335,28 +286,35 @@ p[data-user] {
   }
 }
 
-p[data-user][data-draft="true"] {
-  /*border-left: 3px dashed var(--color-zed-muted);*/
-  background-color: var(--color-zed-sidebar);
+/* Span author attribution - shown on hover */
+span[data-user] {
+  position: relative;
 
   &::after {
-    content: "@" attr(data-user) " · drafting...";
-    color: var(--color-zed-muted);
-    font-style: italic;
+    content: "@" attr(data-user);
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-gray-400);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    vertical-align: middle;
+  }
+
+  &:hover::after {
+    opacity: 1;
   }
 }
 
-p[data-user][data-timestamp] {
-  /*border-left: 3px solid var(--color-zed-blue);*/
-  background-color: transparent;
-  animation: commitFlash 300ms ease-out;
+span[data-user][data-draft="true"]::after {
+  content: "@" attr(data-user) " · drafting...";
+  font-style: italic;
+}
 
-  &::after {
-    content: "@" attr(data-user) " · " attr(data-time);
-    color: var(--color-zed-muted);
-    font-style: normal;
-    animation: timestampFadeIn 250ms ease-out;
-  }
+span[data-user][data-timestamp]::after {
+  content: "@" attr(data-user) " · " attr(data-time);
+  font-style: normal;
 }
 
 p[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
@@ -379,25 +337,13 @@ blockquote[data-user] {
   padding-left: 40px;
   padding-top: 4px;
   padding-bottom: 4px;
-  border-left: 3px solid var(--color-zed-border);
+  border-left: 3px solid var(--color-gray-400);
   margin-left: 4px;
   margin-top: 0;
   margin-bottom: 0;
   font-style: italic;
-  color: var(--color-zed-muted);
+  color: var(--color-gray-500);
   transition: border-color 0.2s ease, background-color 0.2s ease;
-
-  &::after {
-    content: "@" attr(data-user);
-    display: inline-block;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--color-zed-muted);
-    font-style: normal;
-  }
 
   &::before {
     content: "";
@@ -415,28 +361,8 @@ blockquote[data-user] {
   }
 }
 
-blockquote[data-user][data-draft="true"] {
-  /*border-left: 3px dashed var(--color-zed-muted);*/
-  background-color: var(--color-zed-sidebar);
-
-  &::after {
-    content: "@" attr(data-user) " · drafting...";
-    color: var(--color-zed-muted);
-    font-style: normal;
-  }
-}
-
 blockquote[data-user][data-timestamp] {
-  /*border-left: 3px solid var(--color-zed-blue);*/
   background-color: transparent;
-  animation: commitFlash 300ms ease-out;
-
-  &::after {
-    content: "@" attr(data-user) " · " attr(data-time);
-    color: var(--color-zed-muted);
-    font-style: normal;
-    animation: timestampFadeIn 250ms ease-out;
-  }
 }
 
 blockquote[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup) {
@@ -460,21 +386,8 @@ ol[data-user] {
   padding-left: 40px;
   padding-top: 4px;
   padding-bottom: 4px;
-  /*border-left: 3px solid var(--color-zed-border);*/
   margin-left: 4px;
   margin-bottom: 0;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-
-  &::after {
-    content: "@" attr(data-user);
-    display: inline-block;
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--color-zed-muted);
-  }
 
   &::before {
     content: "";
@@ -494,14 +407,7 @@ ol[data-user] {
 
 ul[data-user][data-draft="true"],
 ol[data-user][data-draft="true"] {
-  /*border-left: 3px dashed var(--color-zed-muted);*/
   background-color: var(--color-zed-sidebar);
-
-  &::after {
-    content: "@" attr(data-user) " · drafting...";
-    color: var(--color-zed-muted);
-    font-style: italic;
-  }
 }
 
 li ul[data-user],
@@ -545,13 +451,6 @@ ol[data-user][data-timestamp] {
   /*border-left: 3px solid var(--color-zed-blue);*/
   background-color: transparent;
   animation: commitFlash 300ms ease-out;
-
-  &::after {
-    content: "@" attr(data-user) " · " attr(data-time);
-    color: var(--color-zed-muted);
-    font-style: normal;
-    animation: timestampFadeIn 250ms ease-out;
-  }
 }
 
 ul[data-user][data-draft="true"]:not([data-own]) :is(span, strong, em, u, s, code, mark, sub, sup),
@@ -606,7 +505,7 @@ span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
 .editor__listItemChecked,
 .editor__listItemUnchecked {
   position: relative;
-  padding: 0 23px; /* Increased padding to better align text */
+  padding: 0 23px;
   list-style: none;
   outline: none;
 }
@@ -626,18 +525,18 @@ span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
   left: 0;
   transform: translateY(-45%);
   cursor: pointer;
-  border-radius: 3px; /* Slightly rounded corners */
-  transition: all 0.2s ease; /* Smooth transitions */
+  border-radius: 3px;
+  transition: all 0.2s ease;
 }
 
 .editor__listItemUnchecked::before {
-  border: 1px solid var(--color-gray-300); /* Light grayModern border for unchecked */
+  border: 1px solid var(--color-gray-300);
   background-color: transparent;
 }
 
 .editor__listItemChecked::before {
-  background-color: var(--color-orange-500); /* Tailwind 'indigo-500' for a nice blue fill */
-  border: 1px solid var(--color-orange-500); /* Border color matches background */
+  background-color: var(--color-orange-500);
+  border: 1px solid var(--color-orange-500);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -658,18 +557,18 @@ span[data-user][data-draft="true"]:not([data-own]):has(> div > img) img {
 
 .editor__listItemUnchecked:hover::before,
 .editor__listItemChecked:hover::before {
-  border-color: var(--color-orange-700); /* Darker blue border on hover */
+  border-color: var(--color-orange-700);
 }
 
 .editor__listItemUnchecked:focus::before,
 .editor__listItemChecked:focus::before {
-  box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.4); /* Blue focus ring */
+  box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.4);
 }
 
 .editor__placeholder {
   position: absolute;
   top: 0px;
-  left: 16px;
+  left: 20px;
   color: var(--color-gray-400);
   user-select: none;
   font-weight: 200;

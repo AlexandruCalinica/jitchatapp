@@ -4,6 +4,22 @@ import { User } from "../shared/types";
 import { userState, draftState, timestampState } from "../plugins/nodeStates";
 import { getAvatarUrl } from "../../../utils/avatar";
 
+function formatTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const timeStr = date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  if (isToday) return timeStr;
+  const dateStr = date.toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
+  return `${dateStr}, ${timeStr}`;
+}
+
 export class ExtendedTextNode extends TextNode {
   $config() {
     return this.config("extended-text", {
@@ -27,6 +43,7 @@ export class ExtendedTextNode extends TextNode {
     }
     if (timestamp !== undefined) {
       dom.setAttribute("data-timestamp", timestamp.toString());
+      dom.setAttribute("data-time", formatTime(timestamp));
     }
     return dom;
   }
@@ -54,8 +71,10 @@ export class ExtendedTextNode extends TextNode {
 
     if (timestamp !== undefined) {
       dom.setAttribute("data-timestamp", timestamp.toString());
+      dom.setAttribute("data-time", formatTime(timestamp));
     } else {
       dom.removeAttribute("data-timestamp");
+      dom.removeAttribute("data-time");
     }
 
     return update;

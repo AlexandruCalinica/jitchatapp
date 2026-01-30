@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { createCollection } from '@tanstack/react-db';
 import { electricCollectionOptions } from '@tanstack/electric-db-collection';
 import { getToken, getBackendUrl } from '../services/auth';
@@ -83,7 +84,6 @@ export const documentsCollection = createCollection(
 
     onUpdate: async ({ transaction }) => {
       const operations: MutationOperation[] = transaction.mutations.map((m) => {
-        console.log(m.changes, m.modified)
         return {
           type: 'update' as const,
           original: { id: m.key },
@@ -110,7 +110,7 @@ export const documentsCollection = createCollection(
 );
 
 export function addDocument(channelId: string, name?: string): string {
-  const id = crypto.randomUUID();
+  const id = `doc_${nanoid()}`;
   documentsCollection.insert({
     id,
     name: name || 'Untitled',
@@ -124,6 +124,7 @@ export function addDocument(channelId: string, name?: string): string {
     inserted_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   });
+
   return id;
 }
 
