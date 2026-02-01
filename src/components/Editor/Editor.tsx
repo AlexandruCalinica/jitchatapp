@@ -64,9 +64,8 @@ import { NodeTransformPlugin } from "./plugins/NodeTransformPlugin";
 import { syncCursorPositions } from "./plugins/Collaboration/SyncCursors";
 import { User } from "./shared/types";
 import { useConfigState } from "./shared/state";
-import { FollowChannelProvider } from "./contexts/FollowChannelContext";
+
 import { PingToFollowPlugin } from "./plugins/PingToFollowPlugin";
-import { FollowNotificationPlugin } from "./plugins/FollowNotificationPlugin";
 import { FollowModePlugin } from "./plugins/FollowModePlugin";
 import { ScrollBroadcastPlugin } from "./plugins/ScrollBroadcastPlugin";
 
@@ -370,7 +369,6 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
     }
 
     return (
-      <FollowChannelProvider documentId={documentId ?? null}>
         <div
           ref={containerRef}
           className="relative pl-4 w-full h-fit cursor-text"
@@ -432,7 +430,6 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           <NodeTransformPlugin currentUser={user} />
 
           {useYjs && <PingToFollowPlugin />}
-          {useYjs && <FollowNotificationPlugin />}
           {useYjs && <FollowModePlugin containerRef={containerRef} />}
           {useYjs && <ScrollBroadcastPlugin containerRef={containerRef} />}
 
@@ -515,7 +512,6 @@ export const Editor = forwardRef<LexicalEditor | null, EditorProps>(
           </div>
         </LexicalComposer>
         </div>
-      </FollowChannelProvider>
     );
   }
 );

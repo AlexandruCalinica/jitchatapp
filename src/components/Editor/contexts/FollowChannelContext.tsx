@@ -37,6 +37,7 @@ interface FollowChannelContextValue {
   dismissPing: (timestamp: number) => void;
   broadcastScroll: (scrollTop: number) => void;
   setCurrentDocId: (docId: string | null) => void;
+  navigateToDocument: (docId: string) => void;
 }
 
 const FollowChannelContext = createContext<FollowChannelContextValue | null>(null);
@@ -44,6 +45,7 @@ const FollowChannelContext = createContext<FollowChannelContextValue | null>(nul
 interface FollowChannelProviderProps {
   children: React.ReactNode;
   documentId: string | null;
+  onNavigateToDocument?: (docId: string) => void;
   onScrollReceived?: (payload: FollowScrollPayload) => void;
   onDocSwitchReceived?: (payload: FollowDocSwitchPayload) => void;
   onLeaderOffline?: (leaderId: string) => void;
@@ -52,6 +54,7 @@ interface FollowChannelProviderProps {
 export function FollowChannelProvider({
   children,
   documentId,
+  onNavigateToDocument,
   onScrollReceived,
   onDocSwitchReceived,
   onLeaderOffline,
@@ -68,20 +71,25 @@ export function FollowChannelProvider({
   const [lastDocSwitchEvent, setLastDocSwitchEvent] = useState<DocSwitchEvent | null>(null);
   const eventIdRef = useRef(0);
 
+  const navigateCallbackRef = useRef(onNavigateToDocument);
   const scrollCallbackRef = useRef(onScrollReceived);
   const docSwitchCallbackRef = useRef(onDocSwitchReceived);
   const leaderOfflineCallbackRef = useRef(onLeaderOffline);
 
   useEffect(() => {
+    navigateCallbackRef.current = onNavigateToDocument;
     scrollCallbackRef.current = onScrollReceived;
     docSwitchCallbackRef.current = onDocSwitchReceived;
     leaderOfflineCallbackRef.current = onLeaderOffline;
-  }, [onScrollReceived, onDocSwitchReceived, onLeaderOffline]);
+  }, [onNavigateToDocument, onScrollReceived, onDocSwitchReceived, onLeaderOffline]);
 
   useEffect(() => {
     if (documentId !== currentDocId) {
       setCurrentDocIdState(documentId);
       followChannel.updatePresence(documentId);
+      if (documentId) {
+        followChannel.broadcastDocSwitch(documentId);
+      }
     }
   }, [documentId, currentDocId, followChannel]);
 
@@ -109,6 +117,9 @@ export function FollowChannelProvider({
     });
 
     const unsubDocSwitch = followChannel.onFollowDocSwitch((payload: FollowDocSwitchPayload) => {
+      if (payload.doc_id) {
+        navigateCallbackRef.current?.(payload.doc_id);
+      }
       eventIdRef.current += 1;
       setLastDocSwitchEvent({ payload, eventId: eventIdRef.current });
       docSwitchCallbackRef.current?.(payload);
@@ -174,6 +185,7 @@ export function FollowChannelProvider({
       });
 
       if (leaderState.doc_id && leaderState.doc_id !== currentDocId) {
+        navigateCallbackRef.current?.(leaderState.doc_id);
         const docSwitchPayload = {
           leader_id: userId,
           doc_id: leaderState.doc_id,
@@ -226,6 +238,13 @@ export function FollowChannelProvider({
     [followChannel]
   );
 
+  const navigateToDocument = useCallback(
+    (docId: string) => {
+      navigateCallbackRef.current?.(docId);
+    },
+    []
+  );
+
   const value: FollowChannelContextValue = {
     isConnected: followChannel.isConnected,
     onlineUsers: followChannel.onlineUsers,
@@ -243,6 +262,7 @@ export function FollowChannelProvider({
     dismissPing,
     broadcastScroll,
     setCurrentDocId,
+    navigateToDocument,
   };
 
   return (

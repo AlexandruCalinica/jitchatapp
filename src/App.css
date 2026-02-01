@@ -383,10 +383,10 @@ blockquote[data-user][data-draft="true"][data-own] :is(span, strong, em, u, s, c
 ul[data-user],
 ol[data-user] {
   position: relative;
-  padding-left: 40px;
+  padding-left: 32px;
   padding-top: 4px;
   padding-bottom: 4px;
-  margin-left: 4px;
+  margin-left: 0;
   margin-bottom: 0;
 
   &::before {
@@ -394,7 +394,7 @@ ol[data-user] {
     display: inline-block;
     position: absolute;
     top: 6px;
-    left: 12px;
+    left: 0px;
     width: 20px;
     height: 20px;
     background-image: var(--avatar-url);
@@ -412,7 +412,7 @@ ol[data-user][data-draft="true"] {
 
 li ul[data-user],
 li ol[data-user] {
-  padding-left: 24px;
+  padding-left: 20px;
 
   &::before,
   &::after {

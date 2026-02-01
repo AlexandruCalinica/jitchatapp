@@ -3,6 +3,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 
 import { FollowIndicator } from "../components/FollowIndicator";
 import { useFollowChannelOptional } from "../contexts/FollowChannelContext";
+import { useChannelsContext } from "../../../contexts/channels";
 
 interface FollowModePluginProps {
   containerRef?: React.RefObject<HTMLDivElement>;
@@ -11,6 +12,7 @@ interface FollowModePluginProps {
 export function FollowModePlugin({ containerRef }: FollowModePluginProps) {
   const [editor] = useLexicalComposerContext();
   const followContext = useFollowChannelOptional();
+  const { selectDocument } = useChannelsContext();
   const lastProcessedScrollEventId = useRef(0);
   const lastProcessedDocSwitchEventId = useRef(0);
   const isUserScrolling = useRef(false);
@@ -62,10 +64,10 @@ export function FollowModePlugin({ containerRef }: FollowModePluginProps) {
 
     lastProcessedDocSwitchEventId.current = eventId;
 
-    if (payload.doc_id !== followContext.currentDocId) {
-      console.log("Leader switched to doc:", payload.doc_id);
+    if (payload.doc_id && payload.doc_id !== followContext.currentDocId) {
+      selectDocument(payload.doc_id);
     }
-  }, [followContext?.lastDocSwitchEvent, followContext?.followState.isFollowing, followContext?.currentDocId]);
+  }, [followContext?.lastDocSwitchEvent, followContext?.followState.isFollowing, followContext?.currentDocId, selectDocument]);
 
   useEffect(() => {
     if (!followContext?.followState.isFollowing) {
